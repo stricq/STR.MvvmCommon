@@ -9,7 +9,7 @@ using System.Reflection;
 using Str.Common.Extensions;
 
 
-namespace Str.MvvmCommon.Mvvm {
+namespace Str.MvvmCommon.Core {
 
   [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
   [SuppressMessage("ReSharper", "UnusedMember.Global")]
