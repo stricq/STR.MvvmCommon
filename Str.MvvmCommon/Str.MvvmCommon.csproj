@@ -5,7 +5,7 @@
     <UseWpf>true</UseWpf>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>STR.MvvmCommon</PackageId>
-    <Version>2.0.0.0-dev.4</Version>
+    <Version>2.0.0-dev4.19120.1</Version>
     <Authors>stricq</Authors>
     <Company>STR Programming Services</Company>
     <Product>STR.MvvmCommon</Product>
@@ -19,7 +19,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="STR.Common" Version="2.0.0-dev.4" />
+    <PackageReference Include="STR.Common" Version="2.0.0-dev4.19120.2" />
     <PackageReference Include="System.ComponentModel.Composition" Version="4.6.0-preview4.19212.13" />
   </ItemGroup>
 

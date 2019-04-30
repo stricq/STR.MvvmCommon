@@ -13,7 +13,8 @@ namespace Str.MvvmCommon.Core {
 
   [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
   [SuppressMessage("ReSharper", "UnusedMember.Global")]
-  public class ObservableObject :  INotifyPropertyChanged {
+  [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
+  public class ObservableObject : INotifyPropertyChanged {
 
     #region INotifyPropertyChanged Implementation
 
