@@ -6,11 +6,15 @@ using System.ComponentModel.Composition.Primitives;
 using System.ComponentModel.Composition.ReflectionModel;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows.Markup;
 
 using Str.Common.Extensions;
 
 using Str.MvvmCommon.Contracts;
 using Str.MvvmCommon.Helpers;
+
+
+[assembly: XmlnsDefinition("http://schemas.stricq.com/mvvmcommon", "Str.MvvmCommon.Behaviors")]
 
 
 namespace Str.MvvmCommon.Core {
