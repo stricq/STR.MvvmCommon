@@ -5,7 +5,7 @@
     <UseWpf>true</UseWpf>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>STR.MvvmCommon</PackageId>
-    <Version>2.0.0-dev4.19120.1</Version>
+    <Version>2.0.0-dev4.19120.2</Version>
     <Authors>stricq</Authors>
     <Company>STR Programming Services</Company>
     <Product>STR.MvvmCommon</Product>
