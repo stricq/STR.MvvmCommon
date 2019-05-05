@@ -169,11 +169,11 @@ namespace Str.MvvmCommon.Services {
     }
 
     public async Task SendOnUiThreadAsync<TMessage>(TMessage Message) {
-      await Task.Factory.StartNew(() => sendToTargetOrType(Message, null, null), CancellationToken.None, TaskCreationOptions.DenyChildAttach, TaskScheduler.FromCurrentSynchronizationContext());
+      await TaskHelper.RunOnUiThread(() => sendToTargetOrType(Message, null, null));
     }
 
     public async Task SendOnUiThreadAsync<TMessage>(TMessage Message, object Token) {
-      await Task.Factory.StartNew(() => sendToTargetOrType(Message, null, Token), CancellationToken.None, TaskCreationOptions.DenyChildAttach, TaskScheduler.FromCurrentSynchronizationContext());
+      await TaskHelper.RunOnUiThread(() => sendToTargetOrType(Message, null, Token));
     }
 
     public void Unregister(object Recipient) {

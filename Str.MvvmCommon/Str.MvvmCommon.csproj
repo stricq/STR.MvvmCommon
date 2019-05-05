@@ -5,7 +5,7 @@
     <UseWpf>true</UseWpf>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>STR.MvvmCommon</PackageId>
-    <Version>2.0.0-dev4.19120.2</Version>
+    <Version>2.0.0-dev4.19124.1</Version>
     <Authors>stricq</Authors>
     <Company>STR Programming Services</Company>
     <Product>STR.MvvmCommon</Product>
@@ -14,12 +14,12 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/stricq/STR.MvvmCommon</PackageProjectUrl>
     <PackageTags>str mvvm</PackageTags>
-    <PackageReleaseNotes>Initial release.</PackageReleaseNotes>
+    <PackageReleaseNotes>Uses new RunOnUiThread method.</PackageReleaseNotes>
     <NeutralLanguage>en</NeutralLanguage>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="STR.Common" Version="2.0.0-dev4.19120.2" />
+    <PackageReference Include="STR.Common" Version="2.0.0-dev4.19124.1" />
     <PackageReference Include="System.ComponentModel.Composition" Version="4.6.0-preview4.19212.13" />
   </ItemGroup>
 
