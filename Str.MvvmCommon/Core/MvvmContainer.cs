@@ -35,7 +35,7 @@ namespace Str.MvvmCommon.Core {
     public void Initialize<T>(Func<T> Registrar) {
       catalog = Registrar() as ComposablePartCatalog;
 
-      if (catalog == null) throw new Exception("Return from Registrar() must be ComposablePartCatalog.");
+      if (catalog == null) throw new Exception("Return from Registrar() must be or derive from ComposablePartCatalog.");
 
       container = new CompositionContainer(catalog);
 
@@ -45,7 +45,7 @@ namespace Str.MvvmCommon.Core {
     public void InitializeControllers() {
       IEnumerable<IController> controllers = GetAll<IController>();
 
-      IOrderedEnumerable<IGrouping<int, IController>> groups = controllers.GroupBy(c => c.InitializePriority).OrderBy(g => g.Key);
+      IOrderedEnumerable<IGrouping<int, IController>> groups = controllers.GroupBy(c => c.InitializePriority).OrderByDescending(g => g.Key);
 
       foreach(IGrouping<int, IController> group in groups) {
         Task.Run(() => group.ForEachAsync(controller => controller.InitializeAsync())).Wait();

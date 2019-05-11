@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Threading;
 
@@ -106,7 +105,7 @@ namespace Str.MvvmCommon.Services {
         }
       }
 
-      requestCleanup();
+      RequestCleanup();
     }
 
     public void Register<TMessage>(object Recipient, object Token, bool ReceiveDerivedMessagesToo, Func<TMessage, Task> Action) {
@@ -149,31 +148,31 @@ namespace Str.MvvmCommon.Services {
         }
       }
 
-      requestCleanup();
+      RequestCleanup();
     }
 
     public void Send<TMessage>(TMessage Message) {
-      sendToTargetOrType(Message, null, null);
+      SendToTargetOrType(Message, null, null);
     }
 
     public void Send<TMessage>(TMessage Message, object Token) {
-      sendToTargetOrType(Message, null, Token);
+      SendToTargetOrType(Message, null, Token);
     }
 
     public async Task SendAsync<TMessage>(TMessage Message) {
-      await sendToTargetOrTypeAsync(Message, null, null);
+      await SendToTargetOrTypeAsync(Message, null, null);
     }
 
     public async Task SendAsync<TMessage>(TMessage Message, object Token) {
-      await sendToTargetOrTypeAsync(Message, null, Token);
+      await SendToTargetOrTypeAsync(Message, null, Token);
     }
 
     public async Task SendOnUiThreadAsync<TMessage>(TMessage Message) {
-      await TaskHelper.RunOnUiThread(() => sendToTargetOrType(Message, null, null));
+      await TaskHelper.RunOnUiThread(() => SendToTargetOrType(Message, null, null));
     }
 
     public async Task SendOnUiThreadAsync<TMessage>(TMessage Message, object Token) {
-      await TaskHelper.RunOnUiThread(() => sendToTargetOrType(Message, null, Token));
+      await TaskHelper.RunOnUiThread(() => SendToTargetOrType(Message, null, Token));
     }
 
     public void Unregister(object Recipient) {
@@ -201,14 +200,14 @@ namespace Str.MvvmCommon.Services {
       UnregisterFromLists(Recipient, Token, Action, recipientsStrictAction);
       UnregisterFromLists(Recipient, Token, Action, recipientsOfSubclassesAction);
 
-      requestCleanup();
+      RequestCleanup();
     }
 
     public void Unregister<TMessage>(object Recipient, object Token, Func<TMessage, Task> Action) {
       UnregisterFromLists(Recipient, Token, Action, recipientsStrictAction);
       UnregisterFromLists(Recipient, Token, Action, recipientsOfSubclassesAction);
 
-      requestCleanup();
+      RequestCleanup();
     }
 
     #endregion IMessenger Implementation
@@ -280,7 +279,7 @@ namespace Str.MvvmCommon.Services {
       }
     }
 
-    private void sendToTargetOrType<TMessage>(TMessage message, Type messageTargetType, object token) {
+    private void SendToTargetOrType<TMessage>(TMessage message, Type messageTargetType, object token) {
       Type messageType = typeof(TMessage);
 
       if (messageType.IsGenericType) messageType = messageType.GetGenericTypeDefinition();
@@ -314,10 +313,10 @@ namespace Str.MvvmCommon.Services {
         }
       }
 
-      requestCleanup();
+      RequestCleanup();
     }
 
-    private async Task sendToTargetOrTypeAsync<TMessage>(TMessage message, Type messageTargetType, object token) {
+    private async Task SendToTargetOrTypeAsync<TMessage>(TMessage message, Type messageTargetType, object token) {
       Type messageType = typeof(TMessage);
 
       if (messageType.IsGenericType) messageType = messageType.GetGenericTypeDefinition();
@@ -353,7 +352,7 @@ namespace Str.MvvmCommon.Services {
         await SendToListAsync(message, list, messageTargetType, token);
       }
 
-      requestCleanup();
+      RequestCleanup();
     }
 
     private static void UnregisterFromLists(object recipient, Dictionary<Type, List<WeakActionAndToken>> lists) {
@@ -402,17 +401,17 @@ namespace Str.MvvmCommon.Services {
       }
     }
 
-    private void requestCleanup() {
+    private void RequestCleanup() {
       if (isCleanupRegistered) return;
 
-      Action cleanupAction = cleanup;
+      Action cleanupAction = Cleanup;
 
       Dispatcher.CurrentDispatcher.BeginInvoke(cleanupAction, DispatcherPriority.ApplicationIdle, null);
 
       isCleanupRegistered = true;
     }
 
-    private void cleanup() {
+    private void Cleanup() {
       CleanupList(recipientsOfSubclassesAction);
       CleanupList(recipientsStrictAction);
 
