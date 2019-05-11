@@ -19,7 +19,8 @@ namespace Str.MvvmCommon.Services {
   // https://github.com/lbugnion/mvvmlight/tree/master/GalaSoft.MvvmLight/GalaSoft.MvvmLight%20(PCL)/Messaging
   //
   [Export(typeof(IMessenger))]
-  [SuppressMessage("ReSharper", "InconsistentlySynchronizedField")]
+  [PartCreationPolicy(CreationPolicy.Shared)]
+  [SuppressMessage("ReSharper", "InconsistentlySynchronizedField", Justification = "Always synchronized.")]
   public class Messenger : IMessenger {
 
     #region Private Fields
