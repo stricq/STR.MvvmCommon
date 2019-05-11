@@ -14,7 +14,7 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/stricq/STR.MvvmCommon</PackageProjectUrl>
     <PackageTags>str mvvm</PackageTags>
-    <PackageReleaseNotes>Uses new RunOnUiThread method.</PackageReleaseNotes>
+    <PackageReleaseNotes>Updated for .Net Core 3 Preview 5.</PackageReleaseNotes>
     <NeutralLanguage>en</NeutralLanguage>
   </PropertyGroup>
 
