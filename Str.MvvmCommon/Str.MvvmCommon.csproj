@@ -5,7 +5,7 @@
     <UseWpf>true</UseWpf>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <PackageId>STR.MvvmCommon</PackageId>
-    <Version>2.0.0-dev4.19124.1</Version>
+    <Version>2.0.0-dev5.19139.1</Version>
     <Authors>stricq</Authors>
     <Company>STR Programming Services</Company>
     <Product>STR.MvvmCommon</Product>
@@ -14,16 +14,12 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/stricq/STR.MvvmCommon</PackageProjectUrl>
     <PackageTags>str mvvm</PackageTags>
-    <PackageReleaseNotes>Updated for .Net Core 3 Preview 5.</PackageReleaseNotes>
+    <PackageReleaseNotes>Removed versioning package, it wasn't working.</PackageReleaseNotes>
     <NeutralLanguage>en</NeutralLanguage>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Nerdbank.GitVersioning" Version="3.0.6-beta">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="STR.Common" Version="2.0.0-dev5.f06821a2fe" />
+    <PackageReference Include="STR.Common" Version="2.0.0-dev5.19139.2" />
     <PackageReference Include="System.ComponentModel.Composition" Version="4.6.0-preview5.19224.8" />
   </ItemGroup>
 
