@@ -11,9 +11,9 @@ using Str.Common.Extensions;
 
 namespace Str.MvvmCommon.Core {
 
-  [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
-  [SuppressMessage("ReSharper", "UnusedMember.Global")]
-  [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
+  [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "This is a library.")]
+  [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "This is a library.")]
+  [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global", Justification = "This is a library.")]
   public class ObservableObject : INotifyPropertyChanged {
 
     #region INotifyPropertyChanged Implementation
