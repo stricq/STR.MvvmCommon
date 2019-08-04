@@ -57,6 +57,9 @@ namespace Str.MvvmCommon.Core {
     }
 
     public object Get(Type Type) {
+      //
+      // ReSharper disable once AssignNullToNotNullAttribute - The documentation describes this method call so the warning is incorrect.
+      //
       Lazy<object, object> lazy = container.GetExports(Type, null, null).FirstOrDefault();
 
       return lazy?.Value;

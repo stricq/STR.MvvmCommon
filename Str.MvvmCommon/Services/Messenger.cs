@@ -160,20 +160,20 @@ namespace Str.MvvmCommon.Services {
       SendToTargetOrType(Message, null, Token);
     }
 
-    public async Task SendAsync<TMessage>(TMessage Message) {
-      await SendToTargetOrTypeAsync(Message, null, null);
+    public Task SendAsync<TMessage>(TMessage Message) {
+      return SendToTargetOrTypeAsync(Message, null, null);
     }
 
-    public async Task SendAsync<TMessage>(TMessage Message, object Token) {
-      await SendToTargetOrTypeAsync(Message, null, Token);
+    public Task SendAsync<TMessage>(TMessage Message, object Token) {
+      return SendToTargetOrTypeAsync(Message, null, Token);
     }
 
-    public async Task SendOnUiThreadAsync<TMessage>(TMessage Message) {
-      await TaskHelper.RunOnUiThread(() => SendToTargetOrType(Message, null, null));
+    public Task SendOnUiThreadAsync<TMessage>(TMessage Message) {
+      return TaskHelper.RunOnUiThread(() => SendToTargetOrType(Message, null, null));
     }
 
-    public async Task SendOnUiThreadAsync<TMessage>(TMessage Message, object Token) {
-      await TaskHelper.RunOnUiThread(() => SendToTargetOrType(Message, null, Token));
+    public Task SendOnUiThreadAsync<TMessage>(TMessage Message, object Token) {
+      return TaskHelper.RunOnUiThread(() => SendToTargetOrType(Message, null, Token));
     }
 
     public void Unregister(object Recipient) {
@@ -249,35 +249,34 @@ namespace Str.MvvmCommon.Services {
       }
     }
 
-    private static async Task SendToListAsync<TMessage>(TMessage message, IReadOnlyCollection<WeakActionAndToken> list, Type messageTargetType, object token) {
-      if (list != null) {
-        //
-        // Clone to protect from people registering in a "receive message" method
-        //
-        List<WeakActionAndToken> listClone = list.ToList();
+    private static Task SendToListAsync<TMessage>(TMessage message, IReadOnlyCollection<WeakActionAndToken> list, Type messageTargetType, object token) {
+      if (list == null) return Task.CompletedTask;
+      //
+      // Clone to protect from people registering in a "receive message" method
+      //
+      List<WeakActionAndToken> listClone = list.ToList();
 
-        Task asyncTask = listClone.ForEachAsync(item => {
-          if (item.Action is IExecuteWithObjectAsync executeActionAsync && item.Action.IsAlive && item.Action.Target != null
-                                         && (messageTargetType == null || item.Action.Target.GetType() == messageTargetType || messageTargetType.IsInstanceOfType(item.Action.Target))
-                                         && ((item.Token == null && token == null) || item.Token != null && item.Token.Equals(token))) {
-            return executeActionAsync.ExecuteWithObjectAsync(message);
-          }
+      Task asyncTask = listClone.ForEachAsync(item => {
+        if (item.Action is IExecuteWithObjectAsync executeActionAsync && item.Action.IsAlive && item.Action.Target != null
+            && (messageTargetType == null || item.Action.Target.GetType() == messageTargetType || messageTargetType.IsInstanceOfType(item.Action.Target))
+            && ((item.Token == null && token == null) || item.Token != null && item.Token.Equals(token))) {
+          return executeActionAsync.ExecuteWithObjectAsync(message);
+        }
 
-          return Task.FromResult(0);
-        });
+        return Task.FromResult(0);
+      });
 
-        Task syncTask = listClone.ForEachAsync(item => {
-          if (item.Action is IExecuteWithObject executeAction && item.Action.IsAlive && item.Action.Target != null
-                                    && (messageTargetType == null || item.Action.Target.GetType() == messageTargetType || messageTargetType.IsInstanceOfType(item.Action.Target))
-                                    && ((item.Token == null && token == null) || item.Token != null && item.Token.Equals(token))) {
-            return Task.Run(() => executeAction.ExecuteWithObject(message));
-          }
+      Task syncTask = listClone.ForEachAsync(item => {
+        if (item.Action is IExecuteWithObject executeAction && item.Action.IsAlive && item.Action.Target != null
+            && (messageTargetType == null || item.Action.Target.GetType() == messageTargetType || messageTargetType.IsInstanceOfType(item.Action.Target))
+            && ((item.Token == null && token == null) || item.Token != null && item.Token.Equals(token))) {
+          return Task.Run(() => executeAction.ExecuteWithObject(message));
+        }
 
-          return Task.FromResult(0);
-        });
+        return Task.FromResult(0);
+      });
 
-        await Task.WhenAll(new List<Task> { asyncTask, syncTask });
-      }
+      return Task.WhenAll(new List<Task> { asyncTask, syncTask });
     }
 
     private void SendToTargetOrType<TMessage>(TMessage message, Type messageTargetType, object token) {
@@ -337,7 +336,7 @@ namespace Str.MvvmCommon.Services {
             }
           }
 
-          await SendToListAsync(message, list, messageTargetType, token);
+          await SendToListAsync(message, list, messageTargetType, token).Fire();
         }
       }
 
@@ -350,7 +349,7 @@ namespace Str.MvvmCommon.Services {
           }
         }
 
-        await SendToListAsync(message, list, messageTargetType, token);
+        await SendToListAsync(message, list, messageTargetType, token).Fire();
       }
 
       RequestCleanup();
