@@ -19,8 +19,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="STR.Common" Version="2.0.0-dev7.19215.1" />
-    <PackageReference Include="System.ComponentModel.Composition" Version="4.6.0-preview7.19362.9" />
+    <PackageReference Include="STR.Common" Version="2.0.0-dev8.19226.1" />
+    <PackageReference Include="System.ComponentModel.Composition" Version="4.6.0-preview8.19405.3" />
   </ItemGroup>
 
 </Project>
