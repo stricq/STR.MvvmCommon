@@ -5,7 +5,7 @@
     <UseWpf>true</UseWpf>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <PackageId>STR.MvvmCommon</PackageId>
-    <Version>2.0.0-dev7.19216.1</Version>
+    <Version>2.0.0-dev8.19226.1</Version>
     <Authors>stricq</Authors>
     <Company>STR Programming Services</Company>
     <Product>STR.MvvmCommon</Product>
@@ -14,7 +14,7 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/stricq/STR.MvvmCommon</PackageProjectUrl>
     <PackageTags>str mvvm</PackageTags>
-    <PackageReleaseNotes>Fixed async methods and calls.</PackageReleaseNotes>
+    <PackageReleaseNotes>Updated for preview 8.</PackageReleaseNotes>
     <NeutralLanguage>en</NeutralLanguage>
   </PropertyGroup>
 
