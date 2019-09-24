@@ -38,7 +38,7 @@ pipeline {
       }
     }
     stage('Publish') {
-      when { anyOf { branch 'master'; branch 'release' } }
+      when { anyOf { /* branch 'master'; */ branch 'release' } }
       environment {
         NUGET_API_KEY = credentials('nuget-api-key')
       }
