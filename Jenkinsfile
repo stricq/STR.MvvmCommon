@@ -1,34 +1,25 @@
 pipeline {
   agent any
   stages {
-    stage('Clean') {
-      steps {
-        bat 'dotnet clean'
-      }
-    }
     stage('Build Debug') {
       when { not { branch 'release' } }
       steps {
+        bat 'dotnet clean --configuration Debug'
         bat 'dotnet build --configuration Debug'
       }
     }
     stage('Build Release') {
       when { branch 'release' }
       steps {
+        bat 'dotnet clean --configuration Release'
         bat 'dotnet build --configuration Release'
       }
     }
     stage('Backup') {
-      when { anyOf { branch 'master'; branch 'release' } }
+      when { branch 'release' }
       steps {
         bat '''move /Y nupkgs\\*.nupkg "t:\\Nuget Packages"
         exit 0'''
-      }
-    }
-    stage('Pack Debug') {
-      when { branch 'master' }
-      steps {
-        bat 'dotnet pack --no-build --no-restore --configuration Debug --output nupkgs'
       }
     }
     stage('Pack Release') {
@@ -38,7 +29,7 @@ pipeline {
       }
     }
     stage('Publish') {
-      when { anyOf { /* branch 'master'; */ branch 'release' } }
+      when { branch 'release' }
       environment {
         NUGET_API_KEY = credentials('nuget-api-key')
       }

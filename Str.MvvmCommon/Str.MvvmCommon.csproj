@@ -1,11 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <UseWpf>true</UseWpf>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <PackageId>STR.MvvmCommon</PackageId>
-    <Version>2.0.0</Version>
+    <Version>2.1.0</Version>
     <Authors>stricq</Authors>
     <Company>STR Programming Services</Company>
     <Product>STR.MvvmCommon</Product>
@@ -14,13 +14,13 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/stricq/STR.MvvmCommon</PackageProjectUrl>
     <PackageTags>str mvvm</PackageTags>
-    <PackageReleaseNotes>Update to .Net Core 3.0.</PackageReleaseNotes>
+    <PackageReleaseNotes>Update to .Net Core 3.1.</PackageReleaseNotes>
     <NeutralLanguage>en</NeutralLanguage>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="STR.Common" Version="2.0.0" />
-    <PackageReference Include="System.ComponentModel.Composition" Version="4.6.0" />
+    <PackageReference Include="STR.Common" Version="2.1.0" />
+    <PackageReference Include="System.ComponentModel.Composition" Version="4.7.0" />
   </ItemGroup>
 
 </Project>
