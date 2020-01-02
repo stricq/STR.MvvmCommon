@@ -5,7 +5,6 @@ using System.ComponentModel.Composition.Hosting;
 using System.ComponentModel.Composition.Primitives;
 using System.ComponentModel.Composition.ReflectionModel;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Windows.Markup;
 
 using Str.Common.Extensions;
@@ -48,7 +47,7 @@ namespace Str.MvvmCommon.Core {
       IOrderedEnumerable<IGrouping<int, IController>> groups = controllers.GroupBy(c => c.InitializePriority).OrderByDescending(g => g.Key);
 
       foreach(IGrouping<int, IController> group in groups) {
-        Task.Run(() => group.ForEachAsync(controller => controller.InitializeAsync()).Fire()).Wait();
+        group.ForEachAsync(controller => controller.InitializeAsync()).FireAndWait();
       }
     }
 

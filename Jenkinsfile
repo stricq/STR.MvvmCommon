@@ -1,35 +1,50 @@
 pipeline {
   agent any
+  environment {
+    MASTER_VER  = '2.1.1'
+    RELEASE_VER = '2.1.0'
+
+    GIT_HASH = GIT_COMMIT.take(7)
+  }
   stages {
     stage('Build Debug') {
-      when { not { branch 'release' } }
+      when { not { anyOf { branch 'master'; branch 'release' } } }
       steps {
         bat 'dotnet clean --configuration Debug'
         bat 'dotnet build --configuration Debug'
       }
     }
     stage('Build Release') {
-      when { branch 'release' }
+      when { anyOf { branch 'master'; branch 'release' } }
       steps {
         bat 'dotnet clean --configuration Release'
         bat 'dotnet build --configuration Release'
       }
     }
     stage('Backup') {
-      when { branch 'release' }
+      when { anyOf { branch 'master'; branch 'release' } }
       steps {
         bat '''move /Y nupkgs\\*.nupkg "t:\\Nuget Packages"
         exit 0'''
       }
     }
+    stage('Pack Master') {
+      when { branch 'master' }
+      steps {
+        script {
+          env.JDATE = new Date().format("yyDDD.HHmm")
+        }
+        bat 'dotnet pack --no-build --no-restore --configuration Release -p:PackageVersion="%MASTER_VER%-beta.%JDATE%+%GIT_HASH%" -p:Version="%MASTER_VER%-beta.%JDATE%+%GIT_HASH%" --output nupkgs'
+      }
+    }
     stage('Pack Release') {
       when { branch 'release' }
       steps {
-        bat 'dotnet pack --no-build --no-restore --configuration Release --output nupkgs'
+        bat 'dotnet pack --no-build --no-restore --configuration Release -p:PackageVersion="%RELEASE_VER%+%GIT_HASH%" -p:Version="%RELEASE_VER%+%GIT_HASH%" --output nupkgs'
       }
     }
     stage('Publish') {
-      when { branch 'release' }
+      when { anyOf { branch 'master'; branch 'release' } }
       environment {
         NUGET_API_KEY = credentials('nuget-api-key')
       }

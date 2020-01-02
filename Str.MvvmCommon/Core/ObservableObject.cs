@@ -26,11 +26,11 @@ namespace Str.MvvmCommon.Core {
 
     public static bool IsDesignMode {
       get {
-        using(Process process = Process.GetCurrentProcess()) {
-          string name = process.ProcessName.ToLower().Trim();
+        using Process process = Process.GetCurrentProcess();
 
-          return name == "devenv" || name == "xdesproc";
-        }
+        string name = process.ProcessName.ToLower().Trim();
+
+        return name == "devenv" || name == "xdesproc";
       }
     }
 
@@ -47,11 +47,11 @@ namespace Str.MvvmCommon.Core {
 
       if (propertyInfo == null) throw new ArgumentException("The specified property does not exist.", nameof(propertyExpresssion));
 
-      onPropertyChanged(new PropertyChangedEventArgs(propertyInfo.Name));
+      OnPropertyChanged(new PropertyChangedEventArgs(propertyInfo.Name));
     }
 
     protected void RaisePropertyChanged() {
-      onPropertyChanged(new PropertyChangedEventArgs(String.Empty));
+      OnPropertyChanged(new PropertyChangedEventArgs(String.Empty));
     }
 
     protected bool SetField(ref double field, double value, params Expression<Func<double>>[] selectorArray) {
@@ -181,7 +181,7 @@ namespace Str.MvvmCommon.Core {
 
     #region Private Methods
 
-    private void onPropertyChanged(PropertyChangedEventArgs pce) {
+    private void OnPropertyChanged(PropertyChangedEventArgs pce) {
       PropertyChanged?.Invoke(this, pce);
     }
 

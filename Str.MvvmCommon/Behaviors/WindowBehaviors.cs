@@ -2,8 +2,8 @@
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Windows;
-using System.Windows.Input;
 
+using Str.MvvmCommon.Contracts;
 using Str.MvvmCommon.Core;
 
 
@@ -15,13 +15,13 @@ namespace Str.MvvmCommon.Behaviors {
 
     #region Closing Command
 
-    public static readonly DependencyProperty ClosingCommandProperty = DependencyProperty.RegisterAttached("ClosingCommand", typeof(ICommand), typeof(WindowBehaviors), new PropertyMetadata(null, OnClosingCommandChanged));
+    public static readonly DependencyProperty ClosingCommandProperty = DependencyProperty.RegisterAttached("ClosingCommand", typeof(ICommandAsync<CancelEventArgs>), typeof(WindowBehaviors), new PropertyMetadata(null, OnClosingCommandChanged));
 
-    public static ICommand GetClosingCommand(DependencyObject o) {
-      return o.GetValue(ClosingCommandProperty) as ICommand;
+    public static ICommandAsync<CancelEventArgs> GetClosingCommand(DependencyObject o) {
+      return o.GetValue(ClosingCommandProperty) as ICommandAsync<CancelEventArgs>;
     }
 
-    public static void SetClosingCommand(DependencyObject o, ICommand value) {
+    public static void SetClosingCommand(DependencyObject o, ICommandAsync<CancelEventArgs> value) {
       o.SetValue(ClosingCommandProperty, value);
     }
 
@@ -41,7 +41,7 @@ namespace Str.MvvmCommon.Behaviors {
 
       if (!(sender is Window obj)) return;
 
-      if (obj.GetValue(ClosingCommandProperty) is ICommand command && command.CanExecute(e)) command.Execute(e);
+      if (obj.GetValue(ClosingCommandProperty) is ICommandAsync<CancelEventArgs> command && command.CanExecute(e)) command.Execute(e);
     }
 
     #endregion Closing Command

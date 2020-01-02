@@ -3,24 +3,26 @@ using System.Diagnostics.CodeAnalysis;
 using System.Windows;
 using System.Windows.Input;
 
+using Str.MvvmCommon.Contracts;
 using Str.MvvmCommon.Core;
 
 
 namespace Str.MvvmCommon.Behaviors {
 
-  [SuppressMessage("ReSharper", "UnusedMember.Global")]
-  [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
+  [SuppressMessage("ReSharper", "UnusedType.Global", Justification = "This is a library.")]
+  [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "This is a library.")]
+  [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "This is a library.")]
   public static class UIElementBehaviors {
 
     #region MouseEnter Command
 
-    public static readonly DependencyProperty MouseEnterCommandProperty = DependencyProperty.RegisterAttached("MouseEnterCommand", typeof(ICommand), typeof(UIElementBehaviors), new FrameworkPropertyMetadata(null, OnMouseEnterCommandChanged));
+    public static readonly DependencyProperty MouseEnterCommandProperty = DependencyProperty.RegisterAttached("MouseEnterCommand", typeof(ICommandAsync<MouseEventArgs>), typeof(UIElementBehaviors), new FrameworkPropertyMetadata(null, OnMouseEnterCommandChanged));
 
-    public static ICommand GetMouseEnterCommand(DependencyObject o) {
-      return o.GetValue(MouseEnterCommandProperty) as ICommand;
+    public static ICommandAsync<MouseEventArgs> GetMouseEnterCommand(DependencyObject o) {
+      return o.GetValue(MouseEnterCommandProperty) as ICommandAsync<MouseEventArgs>;
     }
 
-    public static void SetMouseEnterCommand(DependencyObject o, ICommand value) {
+    public static void SetMouseEnterCommand(DependencyObject o, ICommandAsync<MouseEventArgs> value) {
       o.SetValue(MouseEnterCommandProperty, value);
     }
 
@@ -42,20 +44,20 @@ namespace Str.MvvmCommon.Behaviors {
 
       if (!(sender is UIElement obj)) return;
 
-      if (obj.GetValue(MouseEnterCommandProperty) is ICommand command && command.CanExecute(e)) command.Execute(e);
+      if (obj.GetValue(MouseEnterCommandProperty) is ICommandAsync<MouseEventArgs> command && command.CanExecute(e)) command.Execute(e);
     }
 
     #endregion MouseEnter Command
 
     #region MouseLeave Command
 
-    public static readonly DependencyProperty MouseLeaveCommandProperty = DependencyProperty.RegisterAttached("MouseLeaveCommand", typeof(ICommand), typeof(UIElementBehaviors), new FrameworkPropertyMetadata(null, OnMouseLeaveCommandChanged));
+    public static readonly DependencyProperty MouseLeaveCommandProperty = DependencyProperty.RegisterAttached("MouseLeaveCommand", typeof(ICommandAsync<MouseEventArgs>), typeof(UIElementBehaviors), new FrameworkPropertyMetadata(null, OnMouseLeaveCommandChanged));
 
-    public static ICommand GetMouseLeaveCommand(DependencyObject o) {
-      return o.GetValue(MouseLeaveCommandProperty) as ICommand;
+    public static ICommandAsync<MouseEventArgs> GetMouseLeaveCommand(DependencyObject o) {
+      return o.GetValue(MouseLeaveCommandProperty) as ICommandAsync<MouseEventArgs>;
     }
 
-    public static void SetMouseLeaveCommand(DependencyObject o, ICommand value) {
+    public static void SetMouseLeaveCommand(DependencyObject o, ICommandAsync<MouseEventArgs> value) {
       o.SetValue(MouseLeaveCommandProperty, value);
     }
 
@@ -77,20 +79,20 @@ namespace Str.MvvmCommon.Behaviors {
 
       if (!(sender is UIElement obj)) return;
 
-      if (obj.GetValue(MouseLeaveCommandProperty) is ICommand command && command.CanExecute(e)) command.Execute(e);
+      if (obj.GetValue(MouseLeaveCommandProperty) is ICommandAsync<MouseEventArgs> command && command.CanExecute(e)) command.Execute(e);
     }
 
     #endregion MouseLeave Command
 
     #region PreviewKeyDown Command
 
-    public static readonly DependencyProperty PreviewKeyDownCommandProperty = DependencyProperty.RegisterAttached("PreviewKeyDownCommand", typeof(ICommand), typeof(UIElementBehaviors), new FrameworkPropertyMetadata(null, OnPreviewKeyDownCommandChanged));
+    public static readonly DependencyProperty PreviewKeyDownCommandProperty = DependencyProperty.RegisterAttached("PreviewKeyDownCommand", typeof(ICommandAsync<KeyEventArgs>), typeof(UIElementBehaviors), new FrameworkPropertyMetadata(null, OnPreviewKeyDownCommandChanged));
 
-    public static ICommand GetPreviewKeyDownCommand(DependencyObject o) {
-      return o.GetValue(PreviewKeyDownCommandProperty) as ICommand;
+    public static ICommandAsync<KeyEventArgs> GetPreviewKeyDownCommand(DependencyObject o) {
+      return o.GetValue(PreviewKeyDownCommandProperty) as ICommandAsync<KeyEventArgs>;
     }
 
-    public static void SetPreviewKeyDownCommand(DependencyObject o, ICommand value) {
+    public static void SetPreviewKeyDownCommand(DependencyObject o, ICommandAsync<KeyEventArgs> value) {
       o.SetValue(PreviewKeyDownCommandProperty, value);
     }
 
@@ -110,20 +112,20 @@ namespace Str.MvvmCommon.Behaviors {
 
       if (!(sender is UIElement obj)) return;
 
-      if (obj.GetValue(PreviewKeyDownCommandProperty) is ICommand command && command.CanExecute(e)) command.Execute(e);
+      if (obj.GetValue(PreviewKeyDownCommandProperty) is ICommandAsync<KeyEventArgs> command && command.CanExecute(e)) command.Execute(e);
     }
 
     #endregion PreviewKeyDown Command
 
     #region PreviewMouseMove Command
 
-    public static readonly DependencyProperty PreviewMouseMoveCommandProperty = DependencyProperty.RegisterAttached("PreviewMouseMoveCommand", typeof(ICommand), typeof(UIElementBehaviors), new FrameworkPropertyMetadata(null, OnPreviewMouseMoveCommandChanged));
+    public static readonly DependencyProperty PreviewMouseMoveCommandProperty = DependencyProperty.RegisterAttached("PreviewMouseMoveCommand", typeof(ICommandAsync<MouseEventArgs>), typeof(UIElementBehaviors), new FrameworkPropertyMetadata(null, OnPreviewMouseMoveCommandChanged));
 
-    public static ICommand GetPreviewMouseMoveCommand(DependencyObject o) {
-      return o.GetValue(PreviewMouseMoveCommandProperty) as ICommand;
+    public static ICommandAsync<MouseEventArgs> GetPreviewMouseMoveCommand(DependencyObject o) {
+      return o.GetValue(PreviewMouseMoveCommandProperty) as ICommandAsync<MouseEventArgs>;
     }
 
-    public static void SetPreviewMouseMoveCommand(DependencyObject o, ICommand value) {
+    public static void SetPreviewMouseMoveCommand(DependencyObject o, ICommandAsync<MouseEventArgs> value) {
       o.SetValue(PreviewMouseMoveCommandProperty, value);
     }
 
@@ -145,20 +147,20 @@ namespace Str.MvvmCommon.Behaviors {
 
       if (!(sender is UIElement obj)) return;
 
-      if (obj.GetValue(PreviewMouseMoveCommandProperty) is ICommand command && command.CanExecute(e)) command.Execute(e);
+      if (obj.GetValue(PreviewMouseMoveCommandProperty) is ICommandAsync<MouseEventArgs> command && command.CanExecute(e)) command.Execute(e);
     }
 
     #endregion PreviewMouseMove Command
 
     #region PreviewMouseUp Command
 
-    public static readonly DependencyProperty PreviewMouseUpCommandProperty = DependencyProperty.RegisterAttached("PreviewMouseUpCommand", typeof(ICommand), typeof(UIElementBehaviors), new FrameworkPropertyMetadata(null, OnPreviewMouseUpCommandChanged));
+    public static readonly DependencyProperty PreviewMouseUpCommandProperty = DependencyProperty.RegisterAttached("PreviewMouseUpCommand", typeof(ICommandAsync<MouseButtonEventArgs>), typeof(UIElementBehaviors), new FrameworkPropertyMetadata(null, OnPreviewMouseUpCommandChanged));
 
-    public static ICommand GetPreviewMouseUpCommand(DependencyObject o) {
-      return o.GetValue(PreviewMouseUpCommandProperty) as ICommand;
+    public static ICommandAsync<MouseButtonEventArgs> GetPreviewMouseUpCommand(DependencyObject o) {
+      return o.GetValue(PreviewMouseUpCommandProperty) as ICommandAsync<MouseButtonEventArgs>;
     }
 
-    public static void SetPreviewMouseUpCommand(DependencyObject o, ICommand value) {
+    public static void SetPreviewMouseUpCommand(DependencyObject o, ICommandAsync<MouseButtonEventArgs> value) {
       o.SetValue(PreviewMouseUpCommandProperty, value);
     }
 
@@ -180,20 +182,20 @@ namespace Str.MvvmCommon.Behaviors {
 
       if (!(sender is UIElement obj)) return;
 
-      if (obj.GetValue(PreviewMouseUpCommandProperty) is ICommand command && command.CanExecute(e)) command.Execute(e);
+      if (obj.GetValue(PreviewMouseUpCommandProperty) is ICommandAsync<MouseButtonEventArgs> command && command.CanExecute(e)) command.Execute(e);
     }
 
     #endregion PreviewMouseUp Command
 
     #region PreviewMouseDown Command
 
-    public static readonly DependencyProperty PreviewMouseDownCommandProperty = DependencyProperty.RegisterAttached("PreviewMouseDownCommand", typeof(ICommand), typeof(UIElementBehaviors), new FrameworkPropertyMetadata(null, OnPreviewMouseDownCommandChanged));
+    public static readonly DependencyProperty PreviewMouseDownCommandProperty = DependencyProperty.RegisterAttached("PreviewMouseDownCommand", typeof(ICommandAsync<MouseButtonEventArgs>), typeof(UIElementBehaviors), new FrameworkPropertyMetadata(null, OnPreviewMouseDownCommandChanged));
 
-    public static ICommand GetPreviewMouseDownCommand(DependencyObject o) {
-      return o.GetValue(PreviewMouseDownCommandProperty) as ICommand;
+    public static ICommandAsync<MouseButtonEventArgs> GetPreviewMouseDownCommand(DependencyObject o) {
+      return o.GetValue(PreviewMouseDownCommandProperty) as ICommandAsync<MouseButtonEventArgs>;
     }
 
-    public static void SetPreviewMouseDownCommand(DependencyObject o, ICommand value) {
+    public static void SetPreviewMouseDownCommand(DependencyObject o, ICommandAsync<MouseButtonEventArgs> value) {
       o.SetValue(PreviewMouseDownCommandProperty, value);
     }
 
@@ -215,20 +217,20 @@ namespace Str.MvvmCommon.Behaviors {
 
       if (!(sender is UIElement obj)) return;
 
-      if (obj.GetValue(PreviewMouseDownCommandProperty) is ICommand command && command.CanExecute(e)) command.Execute(e);
+      if (obj.GetValue(PreviewMouseDownCommandProperty) is ICommandAsync<MouseButtonEventArgs> command && command.CanExecute(e)) command.Execute(e);
     }
 
     #endregion PreviewMouseDown Command
 
     #region PreviewMouseRightButtonDown Command
 
-    public static readonly DependencyProperty PreviewMouseRightButtonDownCommandProperty = DependencyProperty.RegisterAttached("PreviewMouseRightButtonDownCommand", typeof(ICommand), typeof(UIElementBehaviors), new FrameworkPropertyMetadata(null, OnPreviewMouseRightButtonDownCommandChanged));
+    public static readonly DependencyProperty PreviewMouseRightButtonDownCommandProperty = DependencyProperty.RegisterAttached("PreviewMouseRightButtonDownCommand", typeof(ICommandAsync<MouseButtonEventArgs>), typeof(UIElementBehaviors), new FrameworkPropertyMetadata(null, OnPreviewMouseRightButtonDownCommandChanged));
 
-    public static ICommand GetPreviewMouseRightButtonDownCommand(DependencyObject o) {
-      return o.GetValue(PreviewMouseRightButtonDownCommandProperty) as ICommand;
+    public static ICommandAsync<MouseButtonEventArgs> GetPreviewMouseRightButtonDownCommand(DependencyObject o) {
+      return o.GetValue(PreviewMouseRightButtonDownCommandProperty) as ICommandAsync<MouseButtonEventArgs>;
     }
 
-    public static void SetPreviewMouseRightButtonDownCommand(DependencyObject o, ICommand value) {
+    public static void SetPreviewMouseRightButtonDownCommand(DependencyObject o, ICommandAsync<MouseButtonEventArgs> value) {
       o.SetValue(PreviewMouseRightButtonDownCommandProperty, value);
     }
 
@@ -250,20 +252,20 @@ namespace Str.MvvmCommon.Behaviors {
 
       if (!(sender is UIElement obj)) return;
 
-      if (obj.GetValue(PreviewMouseRightButtonDownCommandProperty) is ICommand command && command.CanExecute(e)) command.Execute(e);
+      if (obj.GetValue(PreviewMouseRightButtonDownCommandProperty) is ICommandAsync<MouseButtonEventArgs> command && command.CanExecute(e)) command.Execute(e);
     }
 
     #endregion PreviewMouseRightButtonDown Command
 
     #region PreviewMouseWheel Command
 
-    public static readonly DependencyProperty PreviewMouseWheelCommandProperty = DependencyProperty.RegisterAttached("PreviewMouseWheelCommand", typeof(ICommand), typeof(UIElementBehaviors), new FrameworkPropertyMetadata(null, OnPreviewMouseWheelCommandChanged));
+    public static readonly DependencyProperty PreviewMouseWheelCommandProperty = DependencyProperty.RegisterAttached("PreviewMouseWheelCommand", typeof(ICommandAsync<MouseWheelEventArgs>), typeof(UIElementBehaviors), new FrameworkPropertyMetadata(null, OnPreviewMouseWheelCommandChanged));
 
-    public static ICommand GetPreviewMouseWheelCommand(DependencyObject o) {
-      return o.GetValue(PreviewMouseWheelCommandProperty) as ICommand;
+    public static ICommandAsync<MouseWheelEventArgs> GetPreviewMouseWheelCommand(DependencyObject o) {
+      return o.GetValue(PreviewMouseWheelCommandProperty) as ICommandAsync<MouseWheelEventArgs>;
     }
 
-    public static void SetPreviewMouseWheelCommand(DependencyObject o, ICommand value) {
+    public static void SetPreviewMouseWheelCommand(DependencyObject o, ICommandAsync<MouseWheelEventArgs> value) {
       o.SetValue(PreviewMouseWheelCommandProperty, value);
     }
 
@@ -285,7 +287,7 @@ namespace Str.MvvmCommon.Behaviors {
 
       if (!(sender is UIElement obj)) return;
 
-      if (obj.GetValue(PreviewMouseWheelCommandProperty) is ICommand command && command.CanExecute(e)) command.Execute(e);
+      if (obj.GetValue(PreviewMouseWheelCommandProperty) is ICommandAsync<MouseWheelEventArgs> command && command.CanExecute(e)) command.Execute(e);
     }
 
     #endregion PreviewMouseWheel Command

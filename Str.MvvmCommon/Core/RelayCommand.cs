@@ -2,10 +2,13 @@
 using System.Threading.Tasks;
 using System.Windows.Input;
 
+using Str.Common.Extensions;
+using Str.MvvmCommon.Contracts;
+
 
 namespace Str.MvvmCommon.Core {
 
-  public class RelayCommand<T> : ICommand {
+  public class RelayCommand<T> : ICommand<T> {
 
     #region Private Fields
 
@@ -23,10 +26,10 @@ namespace Str.MvvmCommon.Core {
 
     #endregion Constructor
 
-    #region ICommand Implementation
+    #region ICommand<T> Implementation
 
-    public bool CanExecute(object Parameter) {
-      return canExecute == null || canExecute((T)Parameter);
+    public bool CanExecute(T Parameter) {
+      return canExecute == null || canExecute(Parameter);
     }
 
     public event EventHandler CanExecuteChanged {
@@ -34,8 +37,20 @@ namespace Str.MvvmCommon.Core {
       remove => CommandManager.RequerySuggested -= value;
     }
 
-    public void Execute(object Parameter) {
-      execute((T)Parameter);
+    public void Execute(T Parameter) {
+      execute(Parameter);
+    }
+
+    #endregion ICommand<T> Implementation
+
+    #region ICommand Implementation
+
+    bool ICommand.CanExecute(object parameter) {
+      return CanExecute((T)parameter);
+    }
+
+    void ICommand.Execute(object parameter) {
+      Execute((T)parameter);
     }
 
     #endregion ICommand Implementation
@@ -43,28 +58,28 @@ namespace Str.MvvmCommon.Core {
   }
 
 
-  public class RelayCommandAsync<T> : ICommand {
+  public class RelayCommandAsync<T> : ICommandAsync<T> {
 
     #region Private Fields
 
-    private readonly Func<T, Task>   execute;
+    private readonly Func<T, Task>   executeAsync;
     private readonly Predicate<T> canExecute;
 
     #endregion Private Fields
 
     #region Constructor
 
-    public RelayCommandAsync(Func<T, Task> Execute, Predicate<T> CanExecute = null) {
-      execute    = Execute ?? throw new ArgumentNullException(nameof(Execute));
-      canExecute = CanExecute;
+    public RelayCommandAsync(Func<T, Task> ExecuteAsync, Predicate<T> CanExecute = null) {
+      executeAsync = ExecuteAsync ?? throw new ArgumentNullException(nameof(ExecuteAsync));
+      canExecute   = CanExecute;
     }
 
     #endregion Constructor
 
-    #region ICommand Implementation
+    #region ICommandAsync<T> Implementation
 
-    public bool CanExecute(object Parameter) {
-      return canExecute == null || canExecute((T)Parameter);
+    public bool CanExecute(T Parameter) {
+      return canExecute == null || canExecute(Parameter);
     }
 
     public event EventHandler CanExecuteChanged {
@@ -72,8 +87,20 @@ namespace Str.MvvmCommon.Core {
       remove => CommandManager.RequerySuggested -= value;
     }
 
-    public async void Execute(object Parameter) {
-      await execute((T)Parameter);
+    public Task ExecuteAsync(T Parameter) {
+      return executeAsync(Parameter);
+    }
+
+    #endregion ICommandAsync<T> Implementation
+
+    #region ICommand Implementation
+
+    bool ICommand.CanExecute(object parameter) {
+      return CanExecute((T)parameter);
+    }
+
+    void ICommand.Execute(object parameter) {
+      ExecuteAsync((T)parameter).FireAndWait();
     }
 
     #endregion ICommand Implementation
@@ -81,7 +108,7 @@ namespace Str.MvvmCommon.Core {
   }
 
 
-  public class RelayCommand : ICommand {
+  public class RelayCommand : ICommandSlim {
 
     #region Private Fields
 
@@ -99,9 +126,9 @@ namespace Str.MvvmCommon.Core {
 
     #endregion Constructor
 
-    #region ICommand Implementation
+    #region ICommandSlim Implementation
 
-    public bool CanExecute(object Parameter) {
+    public bool CanExecute() {
       return canExecute == null || canExecute();
     }
 
@@ -110,8 +137,20 @@ namespace Str.MvvmCommon.Core {
       remove => CommandManager.RequerySuggested -= value;
     }
 
-    public void Execute(object Parameter) {
+    public void Execute() {
       execute();
+    }
+
+    #endregion ICommandSlim Implementation
+
+    #region ICommand Implementation
+
+    bool ICommand.CanExecute(object parameter) {
+      return CanExecute();
+    }
+
+    void ICommand.Execute(object parameter) {
+      Execute();
     }
 
     #endregion ICommand Implementation
@@ -119,27 +158,27 @@ namespace Str.MvvmCommon.Core {
   }
 
 
-  public class RelayCommandAsync : ICommand {
+  public class RelayCommandAsync : ICommandAsync {
 
     #region Private Fields
 
-    private readonly Func<Task>    execute;
+    private readonly Func<Task>    executeAsync;
     private readonly Func<bool> canExecute;
 
     #endregion Private Fields
 
     #region Constructor
 
-    public RelayCommandAsync(Func<Task> Execute, Func<bool> CanExecute = null) {
-      execute    = Execute ?? throw new ArgumentNullException(nameof(Execute));
-      canExecute = CanExecute;
+    public RelayCommandAsync(Func<Task> ExecuteAsync, Func<bool> CanExecute = null) {
+      executeAsync = ExecuteAsync ?? throw new ArgumentNullException(nameof(ExecuteAsync));
+      canExecute   = CanExecute;
     }
 
     #endregion Constructor
 
-    #region ICommand Implementation
+    #region ICommandAsync Implementation
 
-    public bool CanExecute(object Parameter) {
+    public bool CanExecute() {
       return canExecute == null || canExecute();
     }
 
@@ -148,8 +187,20 @@ namespace Str.MvvmCommon.Core {
       remove => CommandManager.RequerySuggested -= value;
     }
 
-    public async void Execute(object Parameter) {
-      await execute();
+    public Task ExecuteAsync() {
+      return executeAsync();
+    }
+
+    #endregion ICommandAsync Implementation
+
+    #region ICommand Implementation
+
+    bool ICommand.CanExecute(object parameter) {
+      return CanExecute();
+    }
+
+    void ICommand.Execute(object parameter) {
+      ExecuteAsync().FireAndWait();
     }
 
     #endregion ICommand Implementation

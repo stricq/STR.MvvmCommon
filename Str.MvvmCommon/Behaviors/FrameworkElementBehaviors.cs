@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
 using System.Windows.Markup;
 
 using Str.MvvmCommon.Contracts;
@@ -12,18 +11,19 @@ using Str.MvvmCommon.Core;
 
 namespace Str.MvvmCommon.Behaviors {
 
-  [SuppressMessage("ReSharper", "UnusedMember.Global")]
+  [SuppressMessage("ReSharper", "UnusedType.Global", Justification = "This is a library.")]
+  [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "This is a library.")]
   public static class FrameworkElementBehaviors {
 
     #region Initialized Command
 
-    public static readonly DependencyProperty InitializedCommandProperty = DependencyProperty.RegisterAttached("InitializedCommand", typeof(ICommand), typeof(FrameworkElementBehaviors), new FrameworkPropertyMetadata(null, OnInitializedCommandChanged));
+    public static readonly DependencyProperty InitializedCommandProperty = DependencyProperty.RegisterAttached("InitializedCommand", typeof(ICommandAsync<EventArgs>), typeof(FrameworkElementBehaviors), new FrameworkPropertyMetadata(null, OnInitializedCommandChanged));
 
-    public static ICommand GetInitializedCommand(DependencyObject o) {
-      return o.GetValue(InitializedCommandProperty) as ICommand;
+    public static ICommandAsync<EventArgs> GetInitializedCommand(DependencyObject o) {
+      return o.GetValue(InitializedCommandProperty) as ICommandAsync<EventArgs>;
     }
 
-    public static void SetInitializedCommand(DependencyObject o, ICommand value) {
+    public static void SetInitializedCommand(DependencyObject o, ICommandAsync<EventArgs> value) {
       o.SetValue(InitializedCommandProperty, value);
     }
 
@@ -43,20 +43,20 @@ namespace Str.MvvmCommon.Behaviors {
 
       if (!(sender is FrameworkElement obj)) return;
 
-      if (obj.GetValue(InitializedCommandProperty) is ICommand command && command.CanExecute(e)) command.Execute(e);
+      if (obj.GetValue(InitializedCommandProperty) is ICommandAsync<EventArgs> command && command.CanExecute(e)) command.Execute(e);
     }
 
     #endregion Initialized Command
 
     #region Loaded Command
 
-    public static readonly DependencyProperty LoadedCommandProperty = DependencyProperty.RegisterAttached("LoadedCommand", typeof(ICommand), typeof(FrameworkElementBehaviors), new FrameworkPropertyMetadata(null, OnLoadedCommandChanged));
+    public static readonly DependencyProperty LoadedCommandProperty = DependencyProperty.RegisterAttached("LoadedCommand", typeof(ICommandAsync<RoutedEventArgs>), typeof(FrameworkElementBehaviors), new FrameworkPropertyMetadata(null, OnLoadedCommandChanged));
 
-    public static ICommand GetLoadedCommand(DependencyObject o) {
-      return o.GetValue(LoadedCommandProperty) as ICommand;
+    public static ICommandAsync<RoutedEventArgs> GetLoadedCommand(DependencyObject o) {
+      return o.GetValue(LoadedCommandProperty) as ICommandAsync<RoutedEventArgs>;
     }
 
-    public static void SetLoadedCommand(DependencyObject o, ICommand value) {
+    public static void SetLoadedCommand(DependencyObject o, ICommandAsync<RoutedEventArgs> value) {
       o.SetValue(LoadedCommandProperty, value);
     }
 
@@ -78,20 +78,20 @@ namespace Str.MvvmCommon.Behaviors {
 
       if (!(sender is FrameworkElement obj)) return;
 
-      if (obj.GetValue(LoadedCommandProperty) is ICommand command && command.CanExecute(e)) command.Execute(e);
+      if (obj.GetValue(LoadedCommandProperty) is ICommandAsync<RoutedEventArgs> command && command.CanExecute(e)) command.Execute(e);
     }
 
     #endregion Loaded Command
 
     #region SizeChanged Command
 
-    public static readonly DependencyProperty SizeChangedCommandProperty = DependencyProperty.RegisterAttached("SizeChangedCommand", typeof(ICommand), typeof(FrameworkElementBehaviors), new FrameworkPropertyMetadata(null, OnSizeChangedCommandChanged));
+    public static readonly DependencyProperty SizeChangedCommandProperty = DependencyProperty.RegisterAttached("SizeChangedCommand", typeof(ICommandAsync<SizeChangedEventArgs>), typeof(FrameworkElementBehaviors), new FrameworkPropertyMetadata(null, OnSizeChangedCommandChanged));
 
-    public static ICommand GetSizeChangedCommand(DependencyObject o) {
-      return o.GetValue(SizeChangedCommandProperty) as ICommand;
+    public static ICommandAsync<SizeChangedEventArgs> GetSizeChangedCommand(DependencyObject o) {
+      return o.GetValue(SizeChangedCommandProperty) as ICommandAsync<SizeChangedEventArgs>;
     }
 
-    public static void SetSizeChangedCommand(DependencyObject o, ICommand value) {
+    public static void SetSizeChangedCommand(DependencyObject o, ICommandAsync<SizeChangedEventArgs> value) {
       o.SetValue(SizeChangedCommandProperty, value);
     }
 
@@ -113,20 +113,20 @@ namespace Str.MvvmCommon.Behaviors {
 
       if (!(sender is FrameworkElement obj)) return;
 
-      if (obj.GetValue(SizeChangedCommandProperty) is ICommand command && command.CanExecute(e)) command.Execute(e);
+      if (obj.GetValue(SizeChangedCommandProperty) is ICommandAsync<SizeChangedEventArgs> command && command.CanExecute(e)) command.Execute(e);
     }
 
     #endregion SizeChanged Command
 
     #region ContextMenuOpening Command
 
-    public static readonly DependencyProperty ContextMenuOpeningCommandProperty = DependencyProperty.RegisterAttached("ContextMenuOpeningCommand", typeof(ICommand), typeof(FrameworkElementBehaviors), new FrameworkPropertyMetadata(null, OnContextMenuOpeningCommandChanged));
+    public static readonly DependencyProperty ContextMenuOpeningCommandProperty = DependencyProperty.RegisterAttached("ContextMenuOpeningCommand", typeof(ICommandAsync<ContextMenuEventArgs>), typeof(FrameworkElementBehaviors), new FrameworkPropertyMetadata(null, OnContextMenuOpeningCommandChanged));
 
-    public static ICommand GetContextMenuOpeningCommand(DependencyObject o) {
-      return o.GetValue(ContextMenuOpeningCommandProperty) as ICommand;
+    public static ICommandAsync<ContextMenuEventArgs> GetContextMenuOpeningCommand(DependencyObject o) {
+      return o.GetValue(ContextMenuOpeningCommandProperty) as ICommandAsync<ContextMenuEventArgs>;
     }
 
-    public static void SetContextMenuOpeningCommand(DependencyObject o, ICommand value) {
+    public static void SetContextMenuOpeningCommand(DependencyObject o, ICommandAsync<ContextMenuEventArgs> value) {
       o.SetValue(ContextMenuOpeningCommandProperty, value);
     }
 
@@ -146,20 +146,20 @@ namespace Str.MvvmCommon.Behaviors {
 
       if (!(sender is FrameworkElement obj)) return;
 
-      if (obj.GetValue(ContextMenuOpeningCommandProperty) is ICommand command && command.CanExecute(e)) command.Execute(e);
+      if (obj.GetValue(ContextMenuOpeningCommandProperty) is ICommandAsync<ContextMenuEventArgs> command && command.CanExecute(e)) command.Execute(e);
     }
 
     #endregion ContextMenuOpening Command
 
     #region ContextMenuClosing Command
 
-    public static readonly DependencyProperty ContextMenuClosingCommandProperty = DependencyProperty.RegisterAttached("ContextMenuClosingCommand", typeof(ICommand), typeof(FrameworkElementBehaviors), new FrameworkPropertyMetadata(null, OnContextMenuClosingCommandChanged));
+    public static readonly DependencyProperty ContextMenuClosingCommandProperty = DependencyProperty.RegisterAttached("ContextMenuClosingCommand", typeof(ICommandAsync<ContextMenuEventArgs>), typeof(FrameworkElementBehaviors), new FrameworkPropertyMetadata(null, OnContextMenuClosingCommandChanged));
 
-    public static ICommand GetContextMenuClosingCommand(DependencyObject o) {
-      return o.GetValue(ContextMenuClosingCommandProperty) as ICommand;
+    public static ICommandAsync<ContextMenuEventArgs> GetContextMenuClosingCommand(DependencyObject o) {
+      return o.GetValue(ContextMenuClosingCommandProperty) as ICommandAsync<ContextMenuEventArgs>;
     }
 
-    public static void SetContextMenuClosingCommand(DependencyObject o, ICommand value) {
+    public static void SetContextMenuClosingCommand(DependencyObject o, ICommandAsync<ContextMenuEventArgs> value) {
       o.SetValue(ContextMenuClosingCommandProperty, value);
     }
 
@@ -179,7 +179,7 @@ namespace Str.MvvmCommon.Behaviors {
 
       if (!(sender is FrameworkElement obj)) return;
 
-      if (obj.GetValue(ContextMenuClosingCommandProperty) is ICommand command && command.CanExecute(e)) command.Execute(e);
+      if (obj.GetValue(ContextMenuClosingCommandProperty) is ICommandAsync<ContextMenuEventArgs> command && command.CanExecute(e)) command.Execute(e);
     }
 
     #endregion ContextMenuClosing Command

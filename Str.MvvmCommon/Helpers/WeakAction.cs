@@ -131,7 +131,7 @@ namespace Str.MvvmCommon.Helpers {
     public void ExecuteWithObject(object parameter) {
       T parameterCasted = (T)parameter;
 
-      execute(parameterCasted);
+      Execute(parameterCasted);
     }
 
     public new void MarkForDeletion() {
@@ -144,7 +144,7 @@ namespace Str.MvvmCommon.Helpers {
 
     #region Private Methods
 
-    private void execute(T parameter = default) {
+    private void Execute(T parameter = default) {
       if (staticAction != null) {
         staticAction(parameter);
 
@@ -212,10 +212,10 @@ namespace Str.MvvmCommon.Helpers {
 
     #region Public Methods
 
-    public async Task ExecuteWithObjectAsync(object parameter) {
+    public Task ExecuteWithObjectAsync(object parameter) {
       T parameterCasted = (T)parameter;
 
-      await execute(parameterCasted);
+      return ExecuteAsync(parameterCasted);
     }
 
     public new void MarkForDeletion() {
@@ -228,18 +228,16 @@ namespace Str.MvvmCommon.Helpers {
 
     #region Private Methods
 
-    private async Task execute(T Parameter = default) {
+    private Task ExecuteAsync(T Parameter = default) {
       if (staticFunc != null) {
-        await staticFunc(Parameter);
-
-        return;
+        return staticFunc(Parameter);
       }
 
-      if (IsAlive) {
-        if (Method != null && ActionReference != null) {
-          if (Delegate.CreateDelegate(typeof(Func<T, Task>), ActionTarget, Method) is Func<T, Task> func) await func(Parameter);
-        }
-      }
+      if (!IsAlive || Method == null || ActionReference == null) return Task.CompletedTask;
+
+      if (Delegate.CreateDelegate(typeof(Func<T, Task>), ActionTarget, Method) is Func<T, Task> func) return func(Parameter);
+
+      return Task.CompletedTask;
     }
 
     #endregion Private Methods
