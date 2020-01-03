@@ -2,7 +2,7 @@ pipeline {
   agent any
   environment {
     MASTER_VER  = '2.1.1'
-    RELEASE_VER = '2.1.0'
+    RELEASE_VER = '2.1.1'
 
     GIT_HASH = GIT_COMMIT.take(7)
   }
