@@ -16,6 +16,11 @@ pipeline {
   	}
     stage('Build Debug') {
       when { not { anyOf { branch 'master'; branch 'release' } } }
+      //when {
+      //  expression {
+      //    return !(GIT_BRANCH == 'master' || GIT_BRANCH == 'release' || fileExists(file: 'skip-debug.txt'))
+      //  }
+      //}
       steps {
         bat 'dotnet clean --configuration Debug'
         bat 'dotnet build --configuration Debug'
