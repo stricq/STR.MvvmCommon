@@ -1,16 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.Composition;
-using System.ComponentModel.Composition.Hosting;
-using System.ComponentModel.Composition.Primitives;
-using System.ComponentModel.Composition.ReflectionModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Windows.Markup;
+
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 using Str.Common.Extensions;
 
 using Str.MvvmCommon.Contracts;
 using Str.MvvmCommon.Helpers;
+using Str.MvvmCommon.Services;
 
 
 [assembly: XmlnsDefinition("http://schemas.stricq.com/mvvmcommon", "Str.MvvmCommon.Behaviors")]
@@ -18,25 +20,25 @@ using Str.MvvmCommon.Helpers;
 
 namespace Str.MvvmCommon.Core {
 
-  [Export(typeof(IMvvmContainer))]
-  [PartCreationPolicy(CreationPolicy.Shared)]
+  [SuppressMessage("ReSharper", "UnusedType.Global", Justification = "This is a library.")]
   public class MvvmContainer : IMvvmContainer {
 
     #region Private Fields
 
-    private static ComposablePartCatalog catalog;
-    private static CompositionContainer  container;
+    private IHost host;
 
     #endregion Private Fields
 
     #region IMvvmContainer Implementation
 
-    public void Initialize<T>(Func<T> Registrar) {
-      catalog = Registrar() as ComposablePartCatalog;
+    public void Initialize(Action<IServiceCollection, IConfiguration> configure) {
+      host = Host.CreateDefaultBuilder().ConfigureServices((context, services) => {
+        services.AddSingleton<IMessenger, Messenger>();
 
-      if (catalog == null) throw new Exception("Return from Registrar() must be or derive from ComposablePartCatalog.");
+        configure(services, context.Configuration);
+      }).Build();
 
-      container = new CompositionContainer(catalog);
+      TaskHelper.RunOnUiThreadAsync(() => { }).FireAndForget();
 
       MvvmLocator.Container = this;
     }
@@ -44,44 +46,33 @@ namespace Str.MvvmCommon.Core {
     public void InitializeControllers() {
       IEnumerable<IController> controllers = GetAll<IController>();
 
-      IOrderedEnumerable<IGrouping<int, IController>> groups = controllers.GroupBy(c => c.InitializePriority).OrderByDescending(g => g.Key);
+      IOrderedEnumerable<IGrouping<int, IController>> groups = controllers.GroupBy(c => c.InitializePriority).OrderBy(g => g.Key);
 
       foreach(IGrouping<int, IController> group in groups) {
         group.ForEachAsync(controller => controller.InitializeAsync()).FireAndWait();
       }
     }
 
-    public void RegisterInstance<T>(T instance) {
-      container.ComposeExportedValue(instance);
+    public void OnStartup() {
+      host.StartAsync().FireAndWait(true);
     }
 
-    public object Get(Type Type) {
-      //
-      // ReSharper disable once AssignNullToNotNullAttribute - The documentation describes this method call so the warning is incorrect.
-      //
-      Lazy<object, object> lazy = container.GetExports(Type, null, null).FirstOrDefault();
+    public void OnExit() {
+      using(host) {
+        host.StopAsync(TimeSpan.FromSeconds(5)).FireAndWait(true);
+      }
+    }
 
-      return lazy?.Value;
+    public object Get(Type type) {
+      return host.Services.GetService(type);
     }
 
     public T Get<T>() {
-      return container.GetExportedValue<T>();
-    }
-
-    public T GetNew<T>() where T : class {
-      IEnumerable<Export> parts = container.GetExports(new ContractBasedImportDefinition(AttributedModelServices.GetContractName(typeof(T)), AttributedModelServices.GetTypeIdentity(typeof(T)), null, ImportCardinality.ZeroOrMore, false, false, CreationPolicy.NonShared));
-
-      Export part = parts.SingleOrDefault();
-
-      return part?.Value as T;
+      return host.Services.GetRequiredService<T>();
     }
 
     public IEnumerable<T> GetAll<T>() {
-      return container.GetExportedValues<T>();
-    }
-
-    public IEnumerable<Type> GetTypes() {
-      return catalog.Parts.Select(part => ReflectionModelServices.GetPartType(part).Value).ToList();
+      return host.Services.GetServices<T>();
     }
 
     #endregion IMvvmContainer Implementation

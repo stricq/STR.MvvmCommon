@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.Composition;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
@@ -18,9 +17,8 @@ namespace Str.MvvmCommon.Services {
   //
   // https://github.com/lbugnion/mvvmlight/tree/master/GalaSoft.MvvmLight/GalaSoft.MvvmLight%20(PCL)/Messaging
   //
-  [Export(typeof(IMessenger))]
-  [PartCreationPolicy(CreationPolicy.Shared)]
   [SuppressMessage("ReSharper", "InconsistentlySynchronizedField", Justification = "Always synchronized.")]
+  [SuppressMessage("ReSharper", "UnusedType.Global", Justification = "This is a library.")]
   public class Messenger : IMessenger {
 
     #region Private Fields
@@ -169,11 +167,11 @@ namespace Str.MvvmCommon.Services {
     }
 
     public Task SendOnUiThreadAsync<TMessage>(TMessage Message) {
-      return TaskHelper.RunOnUiThread(() => SendToTargetOrType(Message, null, null));
+      return TaskHelper.RunOnUiThreadAsync(() => SendToTargetOrType(Message, null, null));
     }
 
     public Task SendOnUiThreadAsync<TMessage>(TMessage Message, object Token) {
-      return TaskHelper.RunOnUiThread(() => SendToTargetOrType(Message, null, Token));
+      return TaskHelper.RunOnUiThreadAsync(() => SendToTargetOrType(Message, null, Token));
     }
 
     public void Unregister(object Recipient) {

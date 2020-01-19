@@ -1,11 +1,9 @@
 ﻿using System;
-using System.ComponentModel.Composition;
 using System.Diagnostics.CodeAnalysis;
 
 
 namespace Str.MvvmCommon.Core {
 
-  [MetadataAttribute]
   [AttributeUsage(AttributeTargets.Class)]
   [SuppressMessage("ReSharper", "UnusedMember.Global")]
   public class ViewAttribute : Attribute {

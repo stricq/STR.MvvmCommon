@@ -1,26 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
 
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+
 
 namespace Str.MvvmCommon.Contracts {
 
   public interface IMvvmContainer {
 
-    void Initialize<T>(Func<T> registrar);
+    void Initialize(Action<IServiceCollection, IConfiguration> configure);
 
     void InitializeControllers();
 
-    void RegisterInstance<T>(T instance);
+    void OnStartup();
+
+    void OnExit();
 
     object Get(Type type);
 
     T Get<T>();
 
-    T GetNew<T>() where T : class;
-
     IEnumerable<T> GetAll<T>();
-
-    IEnumerable<Type> GetTypes();
 
   }
 
