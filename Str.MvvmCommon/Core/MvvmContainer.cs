@@ -54,7 +54,7 @@ namespace Str.MvvmCommon.Core {
     public void OnStartup() {
       host.StartAsync().FireAndWait(true);
 
-      TaskHelper.RunOnUiThreadAsync(() => { }).FireAndForget();
+      TaskHelper.InitializeOnUiThread();
     }
 
     public void OnExit() {
@@ -69,6 +69,10 @@ namespace Str.MvvmCommon.Core {
 
     public T Get<T>() {
       return host.Services.GetRequiredService<T>();
+    }
+
+    public IEnumerable<object> GetAll(Type type) {
+      return host.Services.GetServices(type);
     }
 
     public IEnumerable<T> GetAll<T>() {
