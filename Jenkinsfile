@@ -10,7 +10,7 @@ pipeline {
   	stage('Environment') {
   		steps {
         script {
-          env.JDATE = new Date().format("yyDDD.HHmm")
+          env.JDATE = new Date().format("yyDDD.1HHmm")
         }
   		}
   	}
