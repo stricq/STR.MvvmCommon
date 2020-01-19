@@ -38,8 +38,6 @@ namespace Str.MvvmCommon.Core {
         configure(services, context.Configuration);
       }).Build();
 
-      TaskHelper.RunOnUiThreadAsync(() => { }).FireAndForget();
-
       MvvmLocator.Container = this;
     }
 
@@ -55,6 +53,8 @@ namespace Str.MvvmCommon.Core {
 
     public void OnStartup() {
       host.StartAsync().FireAndWait(true);
+
+      TaskHelper.RunOnUiThreadAsync(() => { }).FireAndForget();
     }
 
     public void OnExit() {
