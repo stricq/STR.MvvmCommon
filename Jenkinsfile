@@ -43,10 +43,11 @@ pipeline {
     stage('Pack Release') {
       when { branch 'release' }
       steps {
-        bat 'dotnet pack --configuration Release --no-build -p:PackageVersion="%RELEASE_VER%+%GIT_HASH%" --output nupkgs'
+        bat 'dotnet pack --configuration Release --no-build --include-symbols -p:IncludeSymbols=true -p:SymbolPackageFormat=snupkg -p:PackageVersion="%RELEASE_VER%+%GIT_HASH%" --output nupkgs'
       }
     }
     stage('Publish') {
+      when { not { branch 'PR*' } }
       environment {
         NUGET_API_KEY = credentials('nuget-api-key')
       }
