@@ -31,7 +31,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="STR.Common" Version="3.0.0-hostbuilder.200192058" />
+    <PackageReference Include="STR.Common" Version="3.0.0" />
   </ItemGroup>
 
 </Project>
