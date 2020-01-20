@@ -30,7 +30,7 @@ pipeline {
     }
     stage('Backup') {
       steps {
-        bat '''move /Y nupkgs\\*.nupkg "t:\\Nuget Packages"
+        bat '''move /Y nupkgs\\* "t:\\Nuget Packages"
         exit 0'''
       }
     }
