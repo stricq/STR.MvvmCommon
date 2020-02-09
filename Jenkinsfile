@@ -35,7 +35,7 @@ pipeline {
       }
     }
     stage('Pack Debug') {
-      when { not { branch 'release' } }
+      when { not { anyOf { branch 'release'; branch 'PR*' } } }
       steps {
         bat 'dotnet pack --configuration Debug --no-build --include-symbols -p:IncludeSymbols=true -p:SymbolPackageFormat=snupkg -p:PackageVersion="%DEBUG_VER%-%GIT_BRANCH%.%JDATE%+%GIT_HASH%" --output nupkgs'
       }
