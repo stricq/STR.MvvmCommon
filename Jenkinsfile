@@ -1,8 +1,8 @@
 pipeline {
   agent any
   environment {
-    DEBUG_VER   = '3.0.0'
-    RELEASE_VER = '3.0.0'
+    DEBUG_VER   = '3.0.1'
+    RELEASE_VER = '3.0.1'
 
     GIT_HASH = GIT_COMMIT.take(7)
   }
