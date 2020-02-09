@@ -14,7 +14,7 @@ namespace Str.MvvmCommon.Contracts {
 
     void Initialize(Action<IServiceCollection, IConfiguration> configure);
 
-    void InitializeControllers();
+    void InitializeControllers(bool descending = false);
 
     void OnStartup();
 

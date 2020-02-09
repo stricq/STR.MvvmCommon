@@ -41,10 +41,12 @@ namespace Str.MvvmCommon.Core {
       MvvmLocator.Container = this;
     }
 
-    public void InitializeControllers() {
+    public void InitializeControllers(bool descending = false) {
       IEnumerable<IController> controllers = GetAll<IController>();
 
-      IOrderedEnumerable<IGrouping<int, IController>> groups = controllers.GroupBy(c => c.InitializePriority).OrderBy(g => g.Key);
+      IEnumerable<IGrouping<int, IController>> groups = controllers.GroupBy(c => c.InitializePriority);
+
+      groups = descending ? groups.OrderByDescending(g => g.Key) : groups.OrderBy(g => g.Key);
 
       foreach(IGrouping<int, IController> group in groups) {
         group.ForEachAsync(controller => controller.InitializeAsync()).FireAndWait();
