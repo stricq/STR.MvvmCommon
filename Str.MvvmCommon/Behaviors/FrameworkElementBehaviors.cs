@@ -221,8 +221,8 @@ namespace Str.MvvmCommon.Behaviors {
 
       ParserContext context = new ParserContext { XamlTypeMapper = new XamlTypeMapper(new string[0]) };
 
-      context.XamlTypeMapper.AddMappingProcessingInstruction("vm", viewModelType.Namespace ?? String.Empty, viewModelType.Assembly.FullName);
-      context.XamlTypeMapper.AddMappingProcessingInstruction("v", viewType.Namespace ?? String.Empty, viewType.Assembly.FullName);
+      context.XamlTypeMapper.AddMappingProcessingInstruction("vm", viewModelType.Namespace ?? String.Empty, viewModelType.Assembly.FullName ?? String.Empty);
+      context.XamlTypeMapper.AddMappingProcessingInstruction("v", viewType.Namespace ?? String.Empty, viewType.Assembly.FullName ?? String.Empty);
 
       context.XmlnsDictionary.Add("",   "http://schemas.microsoft.com/winfx/2006/xaml/presentation");
       context.XmlnsDictionary.Add("x",  "http://schemas.microsoft.com/winfx/2006/xaml");
