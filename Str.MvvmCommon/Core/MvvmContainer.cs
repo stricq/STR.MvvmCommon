@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Reflection;
 using System.Windows.Markup;
 
 using Microsoft.Extensions.Configuration;
@@ -35,7 +36,17 @@ namespace Str.MvvmCommon.Core {
       host = Host.CreateDefaultBuilder().ConfigureServices((context, services) => {
         services.AddSingleton<IMessenger, Messenger>();
 
-        configure(services, context.Configuration);
+        List<Type> classes = Assembly.GetEntryAssembly()?.GetTypes().Where(type => type.IsClass).ToList();
+
+        if (classes != null) {
+          classes.Where(type => type.Name.EndsWith("View") || type.Name.EndsWith("ViewModel"))
+                 .ForEach(type => services.AddSingleton(type));
+
+          classes.Where(type => type.IsAssignableFrom(typeof(IController)) && type.Name.EndsWith("Controller"))
+                 .ForEach(type => services.AddSingleton(typeof(IController), type));
+        }
+
+        configure?.Invoke(services, context.Configuration);
       }).Build();
 
       MvvmLocator.Container = this;
