@@ -42,7 +42,7 @@ namespace Str.MvvmCommon.Core {
           classes.Where(type => type.Name.EndsWith("View") || type.Name.EndsWith("ViewModel"))
                  .ForEach(type => services.AddSingleton(type));
 
-          classes.Where(type => type.IsAssignableFrom(typeof(IController)) && type.Name.EndsWith("Controller"))
+          classes.Where(type => typeof(IController).IsAssignableFrom(type) && type.Name.EndsWith("Controller"))
                  .ForEach(type => services.AddSingleton(typeof(IController), type));
         }
 
