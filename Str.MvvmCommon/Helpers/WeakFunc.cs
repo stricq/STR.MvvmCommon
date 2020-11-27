@@ -68,18 +68,12 @@ namespace Str.MvvmCommon.Helpers {
 
       if (!IsAlive || method == null || actionReference == null) return Task.CompletedTask;
 
-      if (Delegate.CreateDelegate(typeof(Func<TMessage, Task>), ActionTarget, method) is Func<TMessage, Task> func) return func(parameter);
+      if (Delegate.CreateDelegate(typeof(Func<TMessage, Task>), actionReference?.Target, method) is Func<TMessage, Task> func) return func(parameter);
 
       return Task.CompletedTask;
     }
 
     #endregion Public Methods
-
-    #region Private Properties
-
-    private object? ActionTarget => actionReference?.Target;
-
-    #endregion Private Properties
 
   }
 
