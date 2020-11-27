@@ -30,7 +30,7 @@ namespace Str.MvvmCommon.Services {
     private readonly object registerLock = new object();
 
     private struct WeakFuncAndToken {
-      public IWeakFunc Action;
+      public IWeakFunc Func;
 
       public object? Token;
     }
@@ -74,7 +74,7 @@ namespace Str.MvvmCommon.Services {
           WeakFunc<TMessage> weakFunc = new WeakFunc<TMessage>(recipient, action);
 
           WeakFuncAndToken item = new WeakFuncAndToken {
-            Action = weakFunc,
+            Func = weakFunc,
             Token  = token
           };
 
@@ -171,8 +171,8 @@ namespace Str.MvvmCommon.Services {
       List<WeakFuncAndToken> listClone = list.ToList();
 
       Task asyncTask = listClone.ForEachAsync(item => {
-        if (item.Action.IsAlive && ((item.Token == null && token == null) || item.Token != null && item.Token.Equals(token))) {
-          return (item.Action as WeakFunc<TMessage>)!.ExecuteWithObjectAsync(message);
+        if (item.Func.IsAlive && ((item.Token == null && token == null) || item.Token != null && item.Token.Equals(token))) {
+          return (item.Func as WeakFunc<TMessage>)!.ExecuteWithObjectAsync(message);
         }
 
         return Task.CompletedTask;
@@ -187,7 +187,7 @@ namespace Str.MvvmCommon.Services {
       lock(list) {
         foreach(Type messageType in list.Keys) {
           foreach(WeakFuncAndToken item in list[messageType]) {
-            IWeakFunc weakFunc = item.Action;
+            IWeakFunc weakFunc = item.Func;
 
             if (recipient == weakFunc.Target) weakFunc.MarkForDeletion();
           }
@@ -202,8 +202,8 @@ namespace Str.MvvmCommon.Services {
 
       lock(list) {
         foreach(WeakFuncAndToken item in list[messageType]) {
-          if (recipient == item.Action.Target && (action == null || action.Method.Name == item.Action.MethodName) && (token  == null || token.Equals(item.Token))) {
-            item.Action.MarkForDeletion();
+          if (recipient == item.Func.Target && (action == null || action.Method.Name == item.Func.MethodName) && (token  == null || token.Equals(item.Token))) {
+            item.Func.MarkForDeletion();
           }
         }
       }
@@ -231,7 +231,7 @@ namespace Str.MvvmCommon.Services {
         List<Type> listsToRemove = new List<Type>();
 
         foreach((Type type, List<WeakFuncAndToken> weakFuncAndTokens) in dictionary) {
-          List<WeakFuncAndToken> recipientsToRemove = weakFuncAndTokens.Where(item => !item.Action.IsAlive).ToList();
+          List<WeakFuncAndToken> recipientsToRemove = weakFuncAndTokens.Where(item => !item.Func.IsAlive).ToList();
 
           foreach(WeakFuncAndToken recipient in recipientsToRemove) weakFuncAndTokens.Remove(recipient);
 
