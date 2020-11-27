@@ -17,7 +17,7 @@ namespace Str.MvvmCommon.Behaviors {
 
     public static readonly DependencyProperty ClosingCommandProperty = DependencyProperty.RegisterAttached("ClosingCommand", typeof(ICommandAsync<CancelEventArgs>), typeof(WindowBehaviors), new PropertyMetadata(null, OnClosingCommandChanged));
 
-    public static ICommandAsync<CancelEventArgs> GetClosingCommand(DependencyObject o) {
+    public static ICommandAsync<CancelEventArgs>? GetClosingCommand(DependencyObject o) {
       return o.GetValue(ClosingCommandProperty) as ICommandAsync<CancelEventArgs>;
     }
 
@@ -50,7 +50,7 @@ namespace Str.MvvmCommon.Behaviors {
 
     public static readonly DependencyProperty ShowProperty = DependencyProperty.RegisterAttached("Show", typeof(Action), typeof(WindowBehaviors), new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnShowPropertyChanged));
 
-    public static Action GetShow(DependencyObject o) {
+    public static Action? GetShow(DependencyObject o) {
       return o.GetValue(ShowProperty) as Action;
     }
 
@@ -70,7 +70,7 @@ namespace Str.MvvmCommon.Behaviors {
 
     public static readonly DependencyProperty HideProperty = DependencyProperty.RegisterAttached("Hide", typeof(Action), typeof(WindowBehaviors), new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnHidePropertyChanged));
 
-    public static Action GetHide(DependencyObject o) {
+    public static Action? GetHide(DependencyObject o) {
       return o.GetValue(HideProperty) as Action;
     }
 
@@ -90,7 +90,7 @@ namespace Str.MvvmCommon.Behaviors {
 
     public static readonly DependencyProperty ActivateProperty = DependencyProperty.RegisterAttached("Activate", typeof(Func<bool>), typeof(WindowBehaviors), new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnActivatePropertyChanged));
 
-    public static Func<bool> GetActivate(DependencyObject o) {
+    public static Func<bool>? GetActivate(DependencyObject o) {
       return o.GetValue(ActivateProperty) as Func<bool>;
     }
 

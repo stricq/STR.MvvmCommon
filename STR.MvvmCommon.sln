@@ -7,6 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Str.MvvmCommon", "Str.MvvmC
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{3BF2FF0F-2CA1-49CA-937E-2DCBF5FFBA80}"
 	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
 		Jenkinsfile = Jenkinsfile
 		ReadMe.md = ReadMe.md
 		STR.MvvmCommon.sln.DotSettings = STR.MvvmCommon.sln.DotSettings

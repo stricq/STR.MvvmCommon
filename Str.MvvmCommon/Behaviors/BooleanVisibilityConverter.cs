@@ -20,7 +20,7 @@ namespace Str.MvvmCommon.Behaviors {
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
       Visibility? visible = value as Visibility?;
 
-      if (visible.HasValue && visible.Value == Visibility.Hidden) return null;
+      if (visible.HasValue && visible.Value == Visibility.Hidden) return false;
 
       return visible == Visibility.Visible;
     }

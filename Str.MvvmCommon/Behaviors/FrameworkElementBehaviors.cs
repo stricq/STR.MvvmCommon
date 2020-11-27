@@ -11,7 +11,7 @@ using Str.MvvmCommon.Core;
 
 namespace Str.MvvmCommon.Behaviors {
 
-  [SuppressMessage("ReSharper", "UnusedType.Global", Justification = "This is a library.")]
+  [SuppressMessage("ReSharper", "UnusedType.Global",   Justification = "This is a library.")]
   [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "This is a library.")]
   public static class FrameworkElementBehaviors {
 
@@ -19,7 +19,7 @@ namespace Str.MvvmCommon.Behaviors {
 
     public static readonly DependencyProperty InitializedCommandProperty = DependencyProperty.RegisterAttached("InitializedCommand", typeof(ICommandAsync<EventArgs>), typeof(FrameworkElementBehaviors), new FrameworkPropertyMetadata(null, OnInitializedCommandChanged));
 
-    public static ICommandAsync<EventArgs> GetInitializedCommand(DependencyObject o) {
+    public static ICommandAsync<EventArgs>? GetInitializedCommand(DependencyObject o) {
       return o.GetValue(InitializedCommandProperty) as ICommandAsync<EventArgs>;
     }
 
@@ -38,7 +38,7 @@ namespace Str.MvvmCommon.Behaviors {
       }
     }
 
-    private static void OnInitializedChanged(object sender, EventArgs e) {
+    private static void OnInitializedChanged(object? sender, EventArgs e) {
       if (ObservableObject.IsDesignMode) return;
 
       if (!(sender is FrameworkElement obj)) return;
@@ -52,7 +52,7 @@ namespace Str.MvvmCommon.Behaviors {
 
     public static readonly DependencyProperty LoadedCommandProperty = DependencyProperty.RegisterAttached("LoadedCommand", typeof(ICommandAsync<RoutedEventArgs>), typeof(FrameworkElementBehaviors), new FrameworkPropertyMetadata(null, OnLoadedCommandChanged));
 
-    public static ICommandAsync<RoutedEventArgs> GetLoadedCommand(DependencyObject o) {
+    public static ICommandAsync<RoutedEventArgs>? GetLoadedCommand(DependencyObject o) {
       return o.GetValue(LoadedCommandProperty) as ICommandAsync<RoutedEventArgs>;
     }
 
@@ -87,7 +87,7 @@ namespace Str.MvvmCommon.Behaviors {
 
     public static readonly DependencyProperty SizeChangedCommandProperty = DependencyProperty.RegisterAttached("SizeChangedCommand", typeof(ICommandAsync<SizeChangedEventArgs>), typeof(FrameworkElementBehaviors), new FrameworkPropertyMetadata(null, OnSizeChangedCommandChanged));
 
-    public static ICommandAsync<SizeChangedEventArgs> GetSizeChangedCommand(DependencyObject o) {
+    public static ICommandAsync<SizeChangedEventArgs>? GetSizeChangedCommand(DependencyObject o) {
       return o.GetValue(SizeChangedCommandProperty) as ICommandAsync<SizeChangedEventArgs>;
     }
 
@@ -122,7 +122,7 @@ namespace Str.MvvmCommon.Behaviors {
 
     public static readonly DependencyProperty ContextMenuOpeningCommandProperty = DependencyProperty.RegisterAttached("ContextMenuOpeningCommand", typeof(ICommandAsync<ContextMenuEventArgs>), typeof(FrameworkElementBehaviors), new FrameworkPropertyMetadata(null, OnContextMenuOpeningCommandChanged));
 
-    public static ICommandAsync<ContextMenuEventArgs> GetContextMenuOpeningCommand(DependencyObject o) {
+    public static ICommandAsync<ContextMenuEventArgs>? GetContextMenuOpeningCommand(DependencyObject o) {
       return o.GetValue(ContextMenuOpeningCommandProperty) as ICommandAsync<ContextMenuEventArgs>;
     }
 
@@ -155,7 +155,7 @@ namespace Str.MvvmCommon.Behaviors {
 
     public static readonly DependencyProperty ContextMenuClosingCommandProperty = DependencyProperty.RegisterAttached("ContextMenuClosingCommand", typeof(ICommandAsync<ContextMenuEventArgs>), typeof(FrameworkElementBehaviors), new FrameworkPropertyMetadata(null, OnContextMenuClosingCommandChanged));
 
-    public static ICommandAsync<ContextMenuEventArgs> GetContextMenuClosingCommand(DependencyObject o) {
+    public static ICommandAsync<ContextMenuEventArgs>? GetContextMenuClosingCommand(DependencyObject o) {
       return o.GetValue(ContextMenuClosingCommandProperty) as ICommandAsync<ContextMenuEventArgs>;
     }
 
@@ -188,7 +188,7 @@ namespace Str.MvvmCommon.Behaviors {
 
     public static readonly DependencyProperty DataTemplateInjectorProperty = DependencyProperty.RegisterAttached("DataTemplateInjector", typeof(IEnumerable<IViewLocator>), typeof(FrameworkElementBehaviors), new FrameworkPropertyMetadata(null, OnDataTemplateInjectorChanged));
 
-    public static IEnumerable<IViewLocator> GetDataTemplateInjector(DependencyObject o) {
+    public static IEnumerable<IViewLocator>? GetDataTemplateInjector(DependencyObject o) {
       return o.GetValue(DataTemplateInjectorProperty) as IEnumerable<IViewLocator>;
     }
 
@@ -204,7 +204,7 @@ namespace Str.MvvmCommon.Behaviors {
       foreach(IViewLocator view in views) {
         if (view?.DataContext == null) continue;
 
-        DataTemplate dt = CreateTemplate(view.DataContext.GetType(), view.GetType());
+        DataTemplate? dt = CreateTemplate(view.DataContext.GetType(), view.GetType());
 
         if (dt?.DataTemplateKey == null) continue;
 
@@ -214,7 +214,7 @@ namespace Str.MvvmCommon.Behaviors {
       }
     }
 
-    private static DataTemplate CreateTemplate(Type viewModelType, Type viewType) {
+    private static DataTemplate? CreateTemplate(Type viewModelType, Type viewType) {
       const string xamlTemplate = "<DataTemplate DataType=\"{{x:Type vm:{0}}}\"><v:{1} /></DataTemplate>";
 
       string xaml = String.Format(xamlTemplate, viewModelType.Name, viewType.Name);

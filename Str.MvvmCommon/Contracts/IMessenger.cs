@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 
 
@@ -8,49 +9,49 @@ namespace Str.MvvmCommon.Contracts {
   //
   // https://github.com/lbugnion/mvvmlight/tree/master/GalaSoft.MvvmLight/GalaSoft.MvvmLight%20(PCL)/Messaging
   //
+  [SuppressMessage("ReSharper", "UnusedMember.Global",        Justification = "This is a library.")]
+  [SuppressMessage("ReSharper", "UnusedMemberInSuper.Global", Justification = "This is a library.")]
   public interface IMessenger {
 
-    void Register<TMessage>(object recipient, Action<TMessage> action);
+    #region Register
 
-    void Register<TMessage>(object recipient, Func<TMessage, Task> action);
+    void Register<TMessage>(IMessageReceiver recipient, Func<TMessage, Task> action);
 
-    void Register<TMessage>(object recipient, object token, Action<TMessage> action);
+    void Register<TMessage>(IMessageReceiver recipient, object? token, Func<TMessage, Task> action);
 
-    void Register<TMessage>(object recipient, object token, Func<TMessage, Task> action);
+    void Register<TMessage>(IMessageReceiver recipient, bool receiveDerivedMessagesToo, Func<TMessage, Task> action);
 
-    void Register<TMessage>(object recipient, object token, bool receiveDerivedMessagesToo, Action<TMessage> action);
+    void Register<TMessage>(IMessageReceiver recipient, object? token, bool receiveDerivedMessagesToo, Func<TMessage, Task> action);
 
-    void Register<TMessage>(object recipient, object token, bool receiveDerivedMessagesToo, Func<TMessage, Task> action);
+    #endregion Register
 
-    void Register<TMessage>(object recipient, bool receiveDerivedMessagesToo, Action<TMessage> action);
-
-    void Register<TMessage>(object recipient, bool receiveDerivedMessagesToo, Func<TMessage, Task> action);
-
-    void Send<TMessage>(TMessage Message);
-
-    void Send<TMessage>(TMessage Message, object token);
+    #region SendAsync
 
     Task SendAsync<TMessage>(TMessage Message);
 
-    Task SendAsync<TMessage>(TMessage Message, object token);
+    Task SendAsync<TMessage>(TMessage Message, object? token);
+
+    #endregion SendAsync
+
+    #region SendOnUiThreadAsync
 
     Task SendOnUiThreadAsync<TMessage>(TMessage Message);
 
     Task SendOnUiThreadAsync<TMessage>(TMessage Message, object token);
 
-    void Unregister(object recipient);
+    #endregion SendOnUiThreadAsync
 
-    void Unregister<TMessage>(object recipient);
+    #region Unregister
 
-    void Unregister<TMessage>(object recipient, object token);
+    void Unregister(IMessageReceiver recipient);
 
-    void Unregister<TMessage>(object recipient, Action<TMessage> action);
+    void Unregister<TMessage>(IMessageReceiver recipient);
 
-    void Unregister<TMessage>(object recipient, Func<TMessage, Task> action);
+    void Unregister<TMessage>(IMessageReceiver recipient, Func<TMessage, Task> action);
 
-    void Unregister<TMessage>(object recipient, object token, Action<TMessage> action);
+    void Unregister<TMessage>(IMessageReceiver recipient, object token, Func<TMessage, Task> action);
 
-    void Unregister<TMessage>(object recipient, object token, Func<TMessage, Task> action);
+    #endregion Unregister
 
   }
 

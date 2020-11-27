@@ -5,7 +5,7 @@ namespace Str.MvvmCommon.Helpers {
 
   internal static class MvvmLocator {
 
-    public static IMvvmContainer Container { get; set; }
+    public static IMvvmContainer? Container { get; set; }
 
   }
 

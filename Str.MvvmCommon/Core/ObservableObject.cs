@@ -18,7 +18,7 @@ namespace Str.MvvmCommon.Core {
 
     #region INotifyPropertyChanged Implementation
 
-    public event PropertyChangedEventHandler PropertyChanged;
+    public event PropertyChangedEventHandler? PropertyChanged;
 
     #endregion INotifyPropertyChanged Implementation
 
@@ -39,11 +39,9 @@ namespace Str.MvvmCommon.Core {
     #region Protected Methods
 
     protected void RaisePropertyChanged<T>(Expression<Func<T>> propertyExpresssion) {
-      if (propertyExpresssion == null) return;
-
       if (!(propertyExpresssion.Body is MemberExpression memberInfo)) throw new ArgumentException("The parameter is not a property.", nameof(propertyExpresssion));
 
-      PropertyInfo propertyInfo = memberInfo.Member as PropertyInfo;
+      PropertyInfo? propertyInfo = memberInfo.Member as PropertyInfo;
 
       if (propertyInfo == null) throw new ArgumentException("The specified property does not exist.", nameof(propertyExpresssion));
 
@@ -59,7 +57,7 @@ namespace Str.MvvmCommon.Core {
 
       field = value;
 
-      if (selectorArray == null || selectorArray.Length == 0) RaisePropertyChanged();
+      if (selectorArray.Length == 0) RaisePropertyChanged();
       else selectorArray.ForEach(RaisePropertyChanged);
 
       return true;
@@ -106,7 +104,7 @@ namespace Str.MvvmCommon.Core {
 
       field = value;
 
-      if (selectorArray == null || selectorArray.Length == 0) RaisePropertyChanged();
+      if (selectorArray.Length == 0) RaisePropertyChanged();
       else selectorArray.ForEach(RaisePropertyChanged);
 
       return true;
