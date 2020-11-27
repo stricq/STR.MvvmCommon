@@ -45,7 +45,7 @@ namespace Str.MvvmCommon.Helpers {
 
     public string? MethodName => staticFunc != null ? staticFunc.Method.Name : method?.Name;
 
-    public bool IsAlive => staticFunc != null && reference.IsAlive;
+    public bool IsAlive => reference.IsAlive;
 
     public object? Target => reference.Target;
 
