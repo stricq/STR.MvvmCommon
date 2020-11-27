@@ -87,21 +87,21 @@ namespace Str.MvvmCommon.Services {
 
     #endregion Register
 
-    #region Send
+    #region SendAsync
 
     public Task SendAsync<TMessage>(TMessage message, object? token = default) {
       return SendToTargetAsync(message, token);
     }
 
-    #endregion Send
+    #endregion SendAsync
 
-    #region SendOnUiThread
+    #region SendOnUiThreadAsync
 
     public Task SendOnUiThreadAsync<TMessage>(TMessage message, object? token = default) {
       return TaskHelper.RunOnUiThreadAsync(() => SendToTargetAsync(message, token));
     }
 
-    #endregion SendOnUiThread
+    #endregion SendOnUiThreadAsync
 
     #region Unregister
 
