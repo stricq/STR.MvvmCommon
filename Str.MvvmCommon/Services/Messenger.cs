@@ -136,23 +136,6 @@ namespace Str.MvvmCommon.Services {
 
     #region Private Methods
 
-    private static Task SendToListAsync<TMessage>(TMessage message, IEnumerable<WeakFuncAndToken> list, object? token) {
-      //
-      // Clone to protect from people registering in a "receive message" method
-      //
-      List<WeakFuncAndToken> listClone = list.ToList();
-
-      Task asyncTask = listClone.ForEachAsync(item => {
-        if (item.Action.IsAlive && ((item.Token == null && token == null) || item.Token != null && item.Token.Equals(token))) {
-          return (item.Action as WeakFunc<TMessage>)!.ExecuteWithObjectAsync(message);
-        }
-
-        return Task.CompletedTask;
-      });
-
-      return asyncTask;
-    }
-
     private async Task SendToTargetAsync<TMessage>(TMessage message, object? token) {
       Type messageType = typeof(TMessage);
 
@@ -179,6 +162,23 @@ namespace Str.MvvmCommon.Services {
       }
 
       RequestCleanup();
+    }
+
+    private static Task SendToListAsync<TMessage>(TMessage message, IEnumerable<WeakFuncAndToken> list, object? token) {
+      //
+      // Clone to protect from people registering in a "receive message" method
+      //
+      List<WeakFuncAndToken> listClone = list.ToList();
+
+      Task asyncTask = listClone.ForEachAsync(item => {
+        if (item.Action.IsAlive && ((item.Token == null && token == null) || item.Token != null && item.Token.Equals(token))) {
+          return (item.Action as WeakFunc<TMessage>)!.ExecuteWithObjectAsync(message);
+        }
+
+        return Task.CompletedTask;
+      });
+
+      return asyncTask;
     }
 
     private static void UnregisterFromLists(IMessageReceiver recipient, Dictionary<Type, List<WeakFuncAndToken>> list) {
