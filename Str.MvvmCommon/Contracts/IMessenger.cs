@@ -27,17 +27,17 @@ namespace Str.MvvmCommon.Contracts {
 
     #region SendAsync
 
-    Task SendAsync<TMessage>(TMessage Message);
+    Task SendAsync<TMessage>(TMessage message);
 
-    Task SendAsync<TMessage>(TMessage Message, object? token);
+    Task SendAsync<TMessage>(TMessage message, object? token);
 
     #endregion SendAsync
 
     #region SendOnUiThreadAsync
 
-    Task SendOnUiThreadAsync<TMessage>(TMessage Message);
+    Task SendOnUiThreadAsync<TMessage>(TMessage message);
 
-    Task SendOnUiThreadAsync<TMessage>(TMessage Message, object token);
+    Task SendOnUiThreadAsync<TMessage>(TMessage message, object token);
 
     #endregion SendOnUiThreadAsync
 

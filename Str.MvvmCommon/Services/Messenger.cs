@@ -89,24 +89,24 @@ namespace Str.MvvmCommon.Services {
 
     #region Send
 
-    public Task SendAsync<TMessage>(TMessage Message) {
-      return SendToTargetAsync(Message, null);
+    public Task SendAsync<TMessage>(TMessage message) {
+      return SendToTargetAsync(message, null);
     }
 
-    public Task SendAsync<TMessage>(TMessage Message, object? Token) {
-      return SendToTargetAsync(Message, Token);
+    public Task SendAsync<TMessage>(TMessage message, object? Token) {
+      return SendToTargetAsync(message, Token);
     }
 
     #endregion Send
 
     #region SendOnUiThread
 
-    public Task SendOnUiThreadAsync<TMessage>(TMessage Message) {
-      return TaskHelper.RunOnUiThreadAsync(() => SendToTargetAsync(Message, null));
+    public Task SendOnUiThreadAsync<TMessage>(TMessage message) {
+      return TaskHelper.RunOnUiThreadAsync(() => SendToTargetAsync(message, null));
     }
 
-    public Task SendOnUiThreadAsync<TMessage>(TMessage Message, object Token) {
-      return TaskHelper.RunOnUiThreadAsync(() => SendToTargetAsync(Message, Token));
+    public Task SendOnUiThreadAsync<TMessage>(TMessage message, object? token) {
+      return TaskHelper.RunOnUiThreadAsync(() => SendToTargetAsync(message, token));
     }
 
     #endregion SendOnUiThread
