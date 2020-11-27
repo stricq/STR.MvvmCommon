@@ -71,10 +71,10 @@ namespace Str.MvvmCommon.Services {
           }
           else list = recipients[messageType];
 
-          WeakFunc<TMessage> weakAction = new WeakFunc<TMessage>(Recipient, Action);
+          WeakFunc<TMessage> weakFunc = new WeakFunc<TMessage>(Recipient, Action);
 
           WeakFuncAndToken item = new WeakFuncAndToken {
-            Action = weakAction,
+            Action = weakFunc,
             Token  = Token
           };
 
@@ -89,23 +89,15 @@ namespace Str.MvvmCommon.Services {
 
     #region Send
 
-    public Task SendAsync<TMessage>(TMessage message) {
-      return SendToTargetAsync(message, null);
-    }
-
-    public Task SendAsync<TMessage>(TMessage message, object? Token) {
-      return SendToTargetAsync(message, Token);
+    public Task SendAsync<TMessage>(TMessage message, object? token = default) {
+      return SendToTargetAsync(message, token);
     }
 
     #endregion Send
 
     #region SendOnUiThread
 
-    public Task SendOnUiThreadAsync<TMessage>(TMessage message) {
-      return TaskHelper.RunOnUiThreadAsync(() => SendToTargetAsync(message, null));
-    }
-
-    public Task SendOnUiThreadAsync<TMessage>(TMessage message, object? token) {
+    public Task SendOnUiThreadAsync<TMessage>(TMessage message, object? token = default) {
       return TaskHelper.RunOnUiThreadAsync(() => SendToTargetAsync(message, token));
     }
 
@@ -195,9 +187,9 @@ namespace Str.MvvmCommon.Services {
       lock(list) {
         foreach(Type messageType in list.Keys) {
           foreach(WeakFuncAndToken item in list[messageType]) {
-            IWeakFunc weakAction = item.Action;
+            IWeakFunc weakFunc = item.Action;
 
-            if (recipient == weakAction.Target) weakAction.MarkForDeletion();
+            if (recipient == weakFunc.Target) weakFunc.MarkForDeletion();
           }
         }
       }
@@ -238,12 +230,12 @@ namespace Str.MvvmCommon.Services {
       lock(dictionary) {
         List<Type> listsToRemove = new List<Type>();
 
-        foreach((Type type, List<WeakFuncAndToken> weakActionAndTokens) in dictionary) {
-          List<WeakFuncAndToken> recipientsToRemove = weakActionAndTokens.Where(item => !item.Action.IsAlive).ToList();
+        foreach((Type type, List<WeakFuncAndToken> weakFuncAndTokens) in dictionary) {
+          List<WeakFuncAndToken> recipientsToRemove = weakFuncAndTokens.Where(item => !item.Action.IsAlive).ToList();
 
-          foreach(WeakFuncAndToken recipient in recipientsToRemove) weakActionAndTokens.Remove(recipient);
+          foreach(WeakFuncAndToken recipient in recipientsToRemove) weakFuncAndTokens.Remove(recipient);
 
-          if (weakActionAndTokens.Count == 0) listsToRemove.Add(type);
+          if (weakFuncAndTokens.Count == 0) listsToRemove.Add(type);
         }
 
         foreach(Type key in listsToRemove) dictionary.Remove(key);
