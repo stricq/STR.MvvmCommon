@@ -41,25 +41,25 @@ namespace Str.MvvmCommon.Services {
 
     #region Register
 
-    public void Register<TMessage>(IMessageReceiver Recipient, Func<TMessage, Task> Action) {
-      Register(Recipient, null, false, Action);
+    public void Register<TMessage>(IMessageReceiver recipient, Func<TMessage, Task> action) {
+      Register(recipient, null, false, action);
     }
 
-    public void Register<TMessage>(IMessageReceiver Recipient, bool ReceiveDerivedMessagesToo, Func<TMessage, Task> Action) {
-      Register(Recipient, null, ReceiveDerivedMessagesToo, Action);
+    public void Register<TMessage>(IMessageReceiver recipient, bool receiveDerivedMessagesToo, Func<TMessage, Task> action) {
+      Register(recipient, null, receiveDerivedMessagesToo, action);
     }
 
-    public void Register<TMessage>(IMessageReceiver Recipient, object? Token, Func<TMessage, Task> Action) {
-      Register(Recipient, Token, false, Action);
+    public void Register<TMessage>(IMessageReceiver recipient, object? token, Func<TMessage, Task> action) {
+      Register(recipient, token, false, action);
     }
 
-    public void Register<TMessage>(IMessageReceiver Recipient, object? Token, bool ReceiveDerivedMessagesToo, Func<TMessage, Task> Action) {
+    public void Register<TMessage>(IMessageReceiver recipient, object? token, bool receiveDerivedMessagesToo, Func<TMessage, Task> action) {
       lock(registerLock) {
         Type messageType = typeof(TMessage);
 
         if (messageType.IsGenericType) messageType = messageType.GetGenericTypeDefinition();
 
-        Dictionary<Type, List<WeakFuncAndToken>> recipients = ReceiveDerivedMessagesToo ? recipientsOfSubclassesAction : recipientsStrictAction;
+        Dictionary<Type, List<WeakFuncAndToken>> recipients = receiveDerivedMessagesToo ? recipientsOfSubclassesAction : recipientsStrictAction;
 
         lock(recipients) {
           List<WeakFuncAndToken> list;
@@ -71,11 +71,11 @@ namespace Str.MvvmCommon.Services {
           }
           else list = recipients[messageType];
 
-          WeakFunc<TMessage> weakFunc = new WeakFunc<TMessage>(Recipient, Action);
+          WeakFunc<TMessage> weakFunc = new WeakFunc<TMessage>(recipient, action);
 
           WeakFuncAndToken item = new WeakFuncAndToken {
             Action = weakFunc,
-            Token  = Token
+            Token  = token
           };
 
           list.Add(item);
