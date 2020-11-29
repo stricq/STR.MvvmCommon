@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using System.Windows.Markup;
 
 using Microsoft.Extensions.Configuration;
@@ -26,7 +27,9 @@ namespace Str.MvvmCommon.Core {
 
     #region Private Fields
 
-    private IHost host;
+    private readonly ArgumentNullException hostNullException = new ArgumentNullException(nameof(host), "The container has not been initialized.  Please call the Initialize() method first.");
+
+    private IHost? host;
 
     #endregion Private Fields
 
@@ -36,7 +39,7 @@ namespace Str.MvvmCommon.Core {
       host = Host.CreateDefaultBuilder().ConfigureServices((context, services) => {
         services.AddSingleton<IMessenger, Messenger>();
 
-        List<Type> classes = Assembly.GetEntryAssembly()?.GetTypes().Where(type => type.IsClass).ToList();
+        List<Type>? classes = Assembly.GetEntryAssembly()?.GetTypes().Where(type => type.IsClass).ToList();
 
         if (classes != null) {
           classes.Where(type => type.Name.EndsWith("View") || type.Name.EndsWith("ViewModel"))
@@ -46,13 +49,13 @@ namespace Str.MvvmCommon.Core {
                  .ForEach(type => services.AddSingleton(typeof(IController), type));
         }
 
-        configure?.Invoke(services, context.Configuration);
+        configure.Invoke(services, context.Configuration);
       }).Build();
 
       MvvmLocator.Container = this;
     }
 
-    public void InitializeControllers(bool descending = false) {
+    public async Task InitializeControllersAsync(bool descending = false) {
       IEnumerable<IController> controllers = GetAll<IController>();
 
       IEnumerable<IGrouping<int, IController>> groups = controllers.GroupBy(c => c.InitializePriority);
@@ -60,35 +63,47 @@ namespace Str.MvvmCommon.Core {
       groups = descending ? groups.OrderByDescending(g => g.Key) : groups.OrderBy(g => g.Key);
 
       foreach(IGrouping<int, IController> group in groups) {
-        group.ForEachAsync(controller => controller.InitializeAsync()).FireAndWait();
+        await group.ForEachAsync(controller => controller.InitializeAsync()).Fire();
       }
     }
 
-    public void OnStartup() {
-      host.StartAsync().FireAndWait(true);
+    public async Task OnStartupAsync() {
+      if (host == null) throw hostNullException;
+
+      await host.StartAsync().Fire();
 
       TaskHelper.InitializeOnUiThread();
     }
 
-    public void OnExit() {
+    public async Task OnExitAsync() {
+      if (host == null) throw hostNullException;
+
       using(host) {
-        host.StopAsync(TimeSpan.FromSeconds(5)).FireAndWait(true);
+        await host.StopAsync(TimeSpan.FromSeconds(5)).Fire();
       }
     }
 
-    public object Get(Type type) {
+    public object? Get(Type type) {
+      if (host == null) throw hostNullException;
+
       return host.Services.GetService(type);
     }
 
-    public T Get<T>() {
+    public T Get<T>() where T : notnull {
+      if (host == null) throw hostNullException;
+
       return host.Services.GetRequiredService<T>();
     }
 
-    public IEnumerable<object> GetAll(Type type) {
+    public IEnumerable<object?> GetAll(Type type) {
+      if (host == null) throw hostNullException;
+
       return host.Services.GetServices(type);
     }
 
     public IEnumerable<T> GetAll<T>() {
+      if (host == null) throw hostNullException;
+
       return host.Services.GetServices<T>();
     }
 

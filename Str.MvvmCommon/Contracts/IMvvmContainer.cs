@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Threading.Tasks;
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,17 +15,17 @@ namespace Str.MvvmCommon.Contracts {
 
     void Initialize(Action<IServiceCollection, IConfiguration> configure);
 
-    void InitializeControllers(bool descending = false);
+    Task InitializeControllersAsync(bool descending = false);
 
-    void OnStartup();
+    Task OnStartupAsync();
 
-    void OnExit();
+    Task OnExitAsync();
 
-    object Get(Type type);
+    object? Get(Type type);
 
-    T Get<T>();
+    T Get<T>() where T : notnull;
 
-    IEnumerable<object> GetAll(Type type);
+    IEnumerable<object?> GetAll(Type type);
 
     IEnumerable<T> GetAll<T>();
 

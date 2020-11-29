@@ -17,7 +17,6 @@ namespace Str.MvvmCommon.Services {
   //
   // https://github.com/lbugnion/mvvmlight/tree/master/GalaSoft.MvvmLight/GalaSoft.MvvmLight%20(PCL)/Messaging
   //
-  [SuppressMessage("ReSharper", "InconsistentlySynchronizedField", Justification = "Always synchronized.")]
   [SuppressMessage("ReSharper", "UnusedType.Global", Justification = "This is a library.")]
   public class Messenger : IMessenger {
 
@@ -25,79 +24,58 @@ namespace Str.MvvmCommon.Services {
 
     private bool isCleanupRegistered;
 
-    private Dictionary<Type, List<WeakActionAndToken>> recipientsOfSubclassesAction;
-    private Dictionary<Type, List<WeakActionAndToken>> recipientsStrictAction;
+    private readonly Dictionary<Type, List<WeakFuncAndToken>> recipientsOfSubclassesAction = new Dictionary<Type, List<WeakFuncAndToken>>();
+    private readonly Dictionary<Type, List<WeakFuncAndToken>> recipientsStrictAction       = new Dictionary<Type, List<WeakFuncAndToken>>();
 
     private readonly object registerLock = new object();
 
-    private struct WeakActionAndToken {
-      public WeakAction Action;
+    private struct WeakFuncAndToken {
+      public IWeakFunc Func;
 
-      public object Token;
+      public object? Token;
     }
 
     #endregion Private Fields
 
     #region IMessenger Implementation
 
-    public void Register<TMessage>(object Recipient, Action<TMessage> Action) {
-      Register(Recipient, null, false, Action);
+    #region Register
+
+    public void Register<TMessage>(IMessageReceiver recipient, Func<TMessage, Task> action) {
+      Register(recipient, null, false, action);
     }
 
-    public void Register<TMessage>(object Recipient, Func<TMessage, Task> Action) {
-      Register(Recipient, null, false, Action);
+    public void Register<TMessage>(IMessageReceiver recipient, bool receiveDerivedMessagesToo, Func<TMessage, Task> action) {
+      Register(recipient, null, receiveDerivedMessagesToo, action);
     }
 
-    public void Register<TMessage>(object Recipient, bool ReceiveDerivedMessagesToo, Action<TMessage> Action) {
-      Register(Recipient, null, ReceiveDerivedMessagesToo, Action);
+    public void Register<TMessage>(IMessageReceiver recipient, object? token, Func<TMessage, Task> action) {
+      Register(recipient, token, false, action);
     }
 
-    public void Register<TMessage>(object Recipient, bool ReceiveDerivedMessagesToo, Func<TMessage, Task> Action) {
-      Register(Recipient, null, ReceiveDerivedMessagesToo, Action);
-    }
-
-    public void Register<TMessage>(object Recipient, object Token, Action<TMessage> Action) {
-      Register(Recipient, Token, false, Action);
-    }
-
-    public void Register<TMessage>(object Recipient, object Token, Func<TMessage, Task> Action) {
-      Register(Recipient, Token, false, Action);
-    }
-
-    public void Register<TMessage>(object Recipient, object Token, bool ReceiveDerivedMessagesToo, Action<TMessage> Action) {
+    public void Register<TMessage>(IMessageReceiver recipient, object? token, bool receiveDerivedMessagesToo, Func<TMessage, Task> action) {
       lock(registerLock) {
         Type messageType = typeof(TMessage);
 
         if (messageType.IsGenericType) messageType = messageType.GetGenericTypeDefinition();
 
-        Dictionary<Type, List<WeakActionAndToken>> recipients;
-
-        if (ReceiveDerivedMessagesToo) {
-          if (recipientsOfSubclassesAction == null) recipientsOfSubclassesAction = new Dictionary<Type, List<WeakActionAndToken>>();
-
-          recipients = recipientsOfSubclassesAction;
-        }
-        else {
-          if (recipientsStrictAction == null) recipientsStrictAction = new Dictionary<Type, List<WeakActionAndToken>>();
-
-          recipients = recipientsStrictAction;
-        }
+        Dictionary<Type, List<WeakFuncAndToken>> recipients = receiveDerivedMessagesToo ? recipientsOfSubclassesAction : recipientsStrictAction;
 
         lock(recipients) {
-          List<WeakActionAndToken> list;
+          List<WeakFuncAndToken> list;
 
           if (!recipients.ContainsKey(messageType)) {
-            list = new List<WeakActionAndToken>();
+            list = new List<WeakFuncAndToken>();
 
             recipients.Add(messageType, list);
           }
           else list = recipients[messageType];
 
-          WeakAction<TMessage> weakAction = new WeakAction<TMessage>(Recipient, Action);
+          WeakFunc<TMessage> weakFunc = new WeakFunc<TMessage>(recipient, action);
 
-          WeakActionAndToken item = new WeakActionAndToken {
-            Action = weakAction,
-            Token  = Token
+          WeakFuncAndToken item = new WeakFuncAndToken {
+            Func = weakFunc,
+            Token  = token
           };
 
           list.Add(item);
@@ -107,293 +85,125 @@ namespace Str.MvvmCommon.Services {
       RequestCleanup();
     }
 
-    public void Register<TMessage>(object Recipient, object Token, bool ReceiveDerivedMessagesToo, Func<TMessage, Task> Action) {
-      lock(registerLock) {
-        Type messageType = typeof(TMessage);
+    #endregion Register
 
-        if (messageType.IsGenericType) messageType = messageType.GetGenericTypeDefinition();
+    #region SendAsync
 
-        Dictionary<Type, List<WeakActionAndToken>> recipients;
+    public Task SendAsync<TMessage>(TMessage message, object? token = default) {
+      return SendToTargetAsync(message, token);
+    }
 
-        if (ReceiveDerivedMessagesToo) {
-          if (recipientsOfSubclassesAction == null) recipientsOfSubclassesAction = new Dictionary<Type, List<WeakActionAndToken>>();
+    #endregion SendAsync
 
-          recipients = recipientsOfSubclassesAction;
-        }
-        else {
-          if (recipientsStrictAction == null) recipientsStrictAction = new Dictionary<Type, List<WeakActionAndToken>>();
+    #region SendOnUiThreadAsync
 
-          recipients = recipientsStrictAction;
-        }
+    public Task SendOnUiThreadAsync<TMessage>(TMessage message, object? token = default) {
+      return TaskHelper.RunOnUiThreadAsync(() => SendToTargetAsync(message, token));
+    }
 
-        lock(recipients) {
-          List<WeakActionAndToken> list;
+    #endregion SendOnUiThreadAsync
 
-          if (!recipients.ContainsKey(messageType)) {
-            list = new List<WeakActionAndToken>();
+    #region Unregister
 
-            recipients.Add(messageType, list);
-          }
-          else list = recipients[messageType];
-
-          WeakFunc<TMessage> weakAction = new WeakFunc<TMessage>(Recipient, Action);
-
-          WeakActionAndToken item = new WeakActionAndToken {
-            Action = weakAction,
-            Token  = Token
-          };
-
-          list.Add(item);
-        }
-      }
+    public void Unregister(IMessageReceiver recipient) {
+      UnregisterFromLists(recipient, recipientsStrictAction);
+      UnregisterFromLists(recipient, recipientsOfSubclassesAction);
 
       RequestCleanup();
     }
 
-    public void Send<TMessage>(TMessage Message) {
-      SendToTargetOrType(Message, null, null);
-    }
-
-    public void Send<TMessage>(TMessage Message, object Token) {
-      SendToTargetOrType(Message, null, Token);
-    }
-
-    public Task SendAsync<TMessage>(TMessage Message) {
-      return SendToTargetOrTypeAsync(Message, null, null);
-    }
-
-    public Task SendAsync<TMessage>(TMessage Message, object Token) {
-      return SendToTargetOrTypeAsync(Message, null, Token);
-    }
-
-    public Task SendOnUiThreadAsync<TMessage>(TMessage Message) {
-      return TaskHelper.RunOnUiThreadAsync(() => SendToTargetOrType(Message, null, null));
-    }
-
-    public Task SendOnUiThreadAsync<TMessage>(TMessage Message, object Token) {
-      return TaskHelper.RunOnUiThreadAsync(() => SendToTargetOrType(Message, null, Token));
-    }
-
-    public void Unregister(object Recipient) {
-      UnregisterFromLists(Recipient, recipientsOfSubclassesAction);
-      UnregisterFromLists(Recipient, recipientsStrictAction);
-    }
-
-    public void Unregister<TMessage>(object Recipient) {
-      Unregister<TMessage>(Recipient, null, null);
-    }
-
-    public void Unregister<TMessage>(object Recipient, object Token) {
-      Unregister<TMessage>(Recipient, Token, null);
-    }
-
-    public void Unregister<TMessage>(object Recipient, Action<TMessage> Action) {
-      Unregister(Recipient, null, Action);
-    }
-
-    public void Unregister<TMessage>(object Recipient, Func<TMessage, Task> Action) {
-      Unregister(Recipient, null, Action);
-    }
-
-    public void Unregister<TMessage>(object Recipient, object Token, Action<TMessage> Action) {
-      UnregisterFromLists(Recipient, Token, Action, recipientsStrictAction);
-      UnregisterFromLists(Recipient, Token, Action, recipientsOfSubclassesAction);
+    public void Unregister<TMessage>(IMessageReceiver recipient) {
+      UnregisterFromLists<TMessage>(recipient, null, null, recipientsStrictAction);
+      UnregisterFromLists<TMessage>(recipient, null, null, recipientsOfSubclassesAction);
 
       RequestCleanup();
     }
 
-    public void Unregister<TMessage>(object Recipient, object Token, Func<TMessage, Task> Action) {
-      UnregisterFromLists(Recipient, Token, Action, recipientsStrictAction);
-      UnregisterFromLists(Recipient, Token, Action, recipientsOfSubclassesAction);
+    public void Unregister<TMessage>(IMessageReceiver recipient, Func<TMessage, Task> action) {
+      Unregister(recipient, null, action);
+    }
+
+    public void Unregister<TMessage>(IMessageReceiver recipient, object? token, Func<TMessage, Task> action) {
+      UnregisterFromLists(recipient, token, action, recipientsStrictAction);
+      UnregisterFromLists(recipient, token, action, recipientsOfSubclassesAction);
 
       RequestCleanup();
     }
+
+    #endregion Unregister
 
     #endregion IMessenger Implementation
 
     #region Private Methods
 
-    private static void CleanupList(Dictionary<Type, List<WeakActionAndToken>> lists) {
-      if (lists == null) return;
+    private async Task SendToTargetAsync<TMessage>(TMessage message, object? token) {
+      Type messageType = typeof(TMessage);
 
-      lock(lists) {
-        List<Type> listsToRemove = new List<Type>();
-
-        foreach((Type type, List<WeakActionAndToken> weakActionAndTokens) in lists) {
-          List<WeakActionAndToken> recipientsToRemove = weakActionAndTokens.Where(item => item.Action == null || !item.Action.IsAlive).ToList();
-
-          foreach(WeakActionAndToken recipient in recipientsToRemove) weakActionAndTokens.Remove(recipient);
-
-          if (weakActionAndTokens.Count == 0) listsToRemove.Add(type);
-        }
-
-        foreach(Type key in listsToRemove) lists.Remove(key);
-      }
-    }
-
-    private static void SendToList<TMessage>(TMessage message, IReadOnlyCollection<WeakActionAndToken> list, Type messageTargetType, object token) {
-      if (list == null) return;
+      if (messageType.IsGenericType) messageType = messageType.GetGenericTypeDefinition();
       //
       // Clone to protect from people registering in a "receive message" method
       //
-      List<WeakActionAndToken> listClone = list.ToList();
+      Dictionary<Type, List<WeakFuncAndToken>> clone = recipientsOfSubclassesAction.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 
-      foreach(WeakActionAndToken item in listClone) {
-        if (item.Action is IExecuteWithObject executeAction && item.Action.IsAlive && item.Action.Target != null
-                                  && (messageTargetType == null || item.Action.Target.GetType() == messageTargetType || messageTargetType.IsInstanceOfType(item.Action.Target))
-                                  && ((item.Token == null && token == null) || item.Token != null && item.Token.Equals(token))) {
-          executeAction.ExecuteWithObject(message);
-        }
+      foreach(Type type in clone.Keys) {
+        if (messageType != type && !messageType.IsSubclassOf(type) && !type.IsAssignableFrom(messageType) && !type.IsSubclassOf(messageType) && !messageType.IsAssignableFrom(type)) continue;
+
+        List<WeakFuncAndToken> list = clone[type].ToList();
+
+        await SendToListAsync(message, list, token).Fire();
       }
+
+      clone = recipientsStrictAction.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+
+      if (clone.ContainsKey(messageType)) {
+        List<WeakFuncAndToken> list = clone[messageType].ToList();
+
+        await SendToListAsync(message, list, token).Fire();
+      }
+
+      RequestCleanup();
     }
 
-    private static Task SendToListAsync<TMessage>(TMessage message, IReadOnlyCollection<WeakActionAndToken> list, Type messageTargetType, object token) {
-      if (list == null) return Task.CompletedTask;
+    private static Task SendToListAsync<TMessage>(TMessage message, IEnumerable<WeakFuncAndToken> list, object? token) {
       //
       // Clone to protect from people registering in a "receive message" method
       //
-      List<WeakActionAndToken> listClone = list.ToList();
+      List<WeakFuncAndToken> listClone = list.ToList();
 
       Task asyncTask = listClone.ForEachAsync(item => {
-        if (item.Action is IExecuteWithObjectAsync executeActionAsync && item.Action.IsAlive && item.Action.Target != null
-            && (messageTargetType == null || item.Action.Target.GetType() == messageTargetType || messageTargetType.IsInstanceOfType(item.Action.Target))
-            && ((item.Token == null && token == null) || item.Token != null && item.Token.Equals(token))) {
-          return executeActionAsync.ExecuteWithObjectAsync(message);
+        if (item.Func.IsAlive && ((item.Token == null && token == null) || item.Token != null && item.Token.Equals(token))) {
+          return (item.Func as WeakFunc<TMessage>)!.ExecuteWithObjectAsync(message);
         }
 
-        return Task.FromResult(0);
+        return Task.CompletedTask;
       });
 
-      Task syncTask = listClone.ForEachAsync(item => {
-        if (item.Action is IExecuteWithObject executeAction && item.Action.IsAlive && item.Action.Target != null
-            && (messageTargetType == null || item.Action.Target.GetType() == messageTargetType || messageTargetType.IsInstanceOfType(item.Action.Target))
-            && ((item.Token == null && token == null) || item.Token != null && item.Token.Equals(token))) {
-          return Task.Run(() => executeAction.ExecuteWithObject(message));
-        }
-
-        return Task.FromResult(0);
-      });
-
-      return Task.WhenAll(new List<Task> { asyncTask, syncTask });
+      return asyncTask;
     }
 
-    private void SendToTargetOrType<TMessage>(TMessage message, Type messageTargetType, object token) {
+    private static void UnregisterFromLists(IMessageReceiver recipient, Dictionary<Type, List<WeakFuncAndToken>> list) {
+      if (list.Count == 0) return;
+
+      lock(list) {
+        foreach(Type messageType in list.Keys) {
+          foreach(WeakFuncAndToken item in list[messageType]) {
+            IWeakFunc weakFunc = item.Func;
+
+            if (recipient == weakFunc.Target) weakFunc.MarkForDeletion();
+          }
+        }
+      }
+    }
+
+    private static void UnregisterFromLists<TMessage>(IMessageReceiver recipient, object? token, Func<TMessage, Task>? action, Dictionary<Type, List<WeakFuncAndToken>> list) {
       Type messageType = typeof(TMessage);
 
-      if (messageType.IsGenericType) messageType = messageType.GetGenericTypeDefinition();
+      if (list.Count == 0 || !list.ContainsKey(messageType)) return;
 
-      if (recipientsOfSubclassesAction != null) {
-        //
-        // Clone to protect from people registering in a "receive message" method
-        //
-        List<Type> listClone = recipientsOfSubclassesAction.Keys.ToList();
-
-        foreach(Type type in listClone) {
-          List<WeakActionAndToken> list = null;
-
-          if (messageType == type || messageType.IsSubclassOf(type) || type.IsAssignableFrom(messageType) || type.IsSubclassOf(messageType) || messageType.IsAssignableFrom(type)) {
-            lock(recipientsOfSubclassesAction) {
-              list = recipientsOfSubclassesAction[type].ToList();
-            }
-          }
-
-          SendToList(message, list, messageTargetType, token);
-        }
-      }
-
-      if (recipientsStrictAction != null) {
-        lock(recipientsStrictAction) {
-          if (recipientsStrictAction.ContainsKey(messageType)) {
-            List<WeakActionAndToken> list = recipientsStrictAction[messageType].ToList();
-
-            SendToList(message, list, messageTargetType, token);
-          }
-        }
-      }
-
-      RequestCleanup();
-    }
-
-    private async Task SendToTargetOrTypeAsync<TMessage>(TMessage message, Type messageTargetType, object token) {
-      Type messageType = typeof(TMessage);
-
-      if (messageType.IsGenericType) messageType = messageType.GetGenericTypeDefinition();
-
-      if (recipientsOfSubclassesAction != null) {
-        //
-        // Clone to protect from people registering in a "receive message" method
-        //
-        List<Type> listClone = recipientsOfSubclassesAction.Keys.ToList();
-
-        foreach(Type type in listClone) {
-          List<WeakActionAndToken> list = null;
-
-          if (messageType == type || messageType.IsSubclassOf(type) || type.IsAssignableFrom(messageType) || type.IsSubclassOf(messageType) || messageType.IsAssignableFrom(type)) {
-            lock(recipientsOfSubclassesAction) {
-              list = recipientsOfSubclassesAction[type].ToList();
-            }
-          }
-
-          await SendToListAsync(message, list, messageTargetType, token).Fire();
-        }
-      }
-
-      if (recipientsStrictAction != null) {
-        List<WeakActionAndToken> list = null;
-
-        lock(recipientsStrictAction) {
-          if (recipientsStrictAction.ContainsKey(messageType)) {
-            list = recipientsStrictAction[messageType].ToList();
-          }
-        }
-
-        await SendToListAsync(message, list, messageTargetType, token).Fire();
-      }
-
-      RequestCleanup();
-    }
-
-    private static void UnregisterFromLists(object recipient, Dictionary<Type, List<WeakActionAndToken>> lists) {
-      if (recipient == null || lists == null || lists.Count == 0) return;
-
-      lock(lists) {
-        foreach(Type messageType in lists.Keys) {
-          foreach(WeakActionAndToken item in lists[messageType]) {
-            IExecuteWithObject weakAction = (IExecuteWithObject)item.Action;
-
-            if (weakAction != null && recipient == weakAction.Target) weakAction.MarkForDeletion();
-          }
-        }
-      }
-    }
-
-    private static void UnregisterFromLists<TMessage>(object recipient, object token, Action<TMessage> action, Dictionary<Type, List<WeakActionAndToken>> lists) {
-      Type messageType = typeof(TMessage);
-
-      if (recipient == null || lists == null || lists.Count == 0 || !lists.ContainsKey(messageType)) return;
-
-      lock(lists) {
-        foreach(WeakActionAndToken item in lists[messageType]) {
-          if (item.Action is WeakAction<TMessage> weakActionCasted && recipient == weakActionCasted.Target
-                                       && (action == null || action.Method.Name == weakActionCasted.MethodName)
-                                       && (token  == null || token.Equals(item.Token))) {
-            item.Action.MarkForDeletion();
-          }
-        }
-      }
-    }
-
-    private static void UnregisterFromLists<TMessage>(object recipient, object token, Func<TMessage, Task> action, Dictionary<Type, List<WeakActionAndToken>> lists) {
-      Type messageType = typeof(TMessage);
-
-      if (recipient == null || lists == null || lists.Count == 0 || !lists.ContainsKey(messageType)) return;
-
-      lock(lists) {
-        foreach(WeakActionAndToken item in lists[messageType]) {
-          if (item.Action is WeakAction<TMessage> weakActionCasted && recipient == weakActionCasted.Target
-                                       && (action == null || action.Method.Name == weakActionCasted.MethodName)
-                                       && (token  == null || token.Equals(item.Token))) {
-            item.Action.MarkForDeletion();
+      lock(list) {
+        foreach(WeakFuncAndToken item in list[messageType]) {
+          if (recipient == item.Func.Target && (action == null || action.Method.Name == item.Func.MethodName) && (token  == null || token.Equals(item.Token))) {
+            item.Func.MarkForDeletion();
           }
         }
       }
@@ -414,6 +224,22 @@ namespace Str.MvvmCommon.Services {
       CleanupList(recipientsStrictAction);
 
       isCleanupRegistered = false;
+    }
+
+    private static void CleanupList(Dictionary<Type, List<WeakFuncAndToken>> dictionary) {
+      lock(dictionary) {
+        List<Type> listsToRemove = new List<Type>();
+
+        foreach((Type type, List<WeakFuncAndToken> weakFuncAndTokens) in dictionary) {
+          List<WeakFuncAndToken> recipientsToRemove = weakFuncAndTokens.Where(item => !item.Func.IsAlive).ToList();
+
+          foreach(WeakFuncAndToken recipient in recipientsToRemove) weakFuncAndTokens.Remove(recipient);
+
+          if (weakFuncAndTokens.Count == 0) listsToRemove.Add(type);
+        }
+
+        foreach(Type key in listsToRemove) dictionary.Remove(key);
+      }
     }
 
     #endregion Private Methods

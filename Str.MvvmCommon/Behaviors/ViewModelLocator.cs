@@ -15,7 +15,7 @@ namespace Str.MvvmCommon.Behaviors {
 
     public static readonly DependencyProperty ViewModelProperty = DependencyProperty.RegisterAttached("ViewModel", typeof(Type), typeof(ViewModelLocator), new FrameworkPropertyMetadata(null, OnViewModelPropertyChanged));
 
-    public static Type GetViewModel(DependencyObject o) {
+    public static Type? GetViewModel(DependencyObject o) {
       return o.GetValue(ViewModelProperty) as Type;
     }
 
@@ -27,9 +27,9 @@ namespace Str.MvvmCommon.Behaviors {
       if (!(o is FrameworkElement element)) return;
 
       if (e.OldValue == null && e.NewValue != null) {
-        Type type = e.NewValue as Type;
+        Type? type = e.NewValue as Type;
 
-        element.DataContext = MvvmLocator.Container.Get(type);
+        if (type != null) element.DataContext = MvvmLocator.Container?.Get(type);
       }
       else if (e.OldValue != null && e.NewValue == null) {
         element.DataContext = null;
