@@ -21,8 +21,8 @@ namespace Str.MvvmCommon.Tests {
     public async Task RegisterRecipient() {
       Messenger messenger = new Messenger();
 
-      messenger.Register<MessageA>(this, null, false, Receiver);
-      messenger.Register<MessageA>(this, null, false, Receiver);
+      messenger.Register<MessageA>(this, Receiver);
+      messenger.Register<MessageA>(this, Receiver);
 
       static Task Receiver(MessageA message) {
         Interlocked.Increment(ref counter);
