@@ -164,21 +164,17 @@ namespace Str.MvvmCommon.Services {
       RequestCleanup();
     }
 
-    private static Task SendToListAsync<TMessage>(TMessage message, IEnumerable<WeakFuncAndToken> list, object? token) {
+    private static async Task SendToListAsync<TMessage>(TMessage message, IEnumerable<WeakFuncAndToken> list, object? token) {
       //
       // Clone to protect from people registering in a "receive message" method
       //
       List<WeakFuncAndToken> listClone = list.ToList();
 
-      Task asyncTask = listClone.ForEachAsync(item => {
+      foreach(WeakFuncAndToken item in listClone) {
         if (item.Func.IsAlive && ((item.Token == null && token == null) || item.Token != null && item.Token.Equals(token))) {
-          return (item.Func as WeakFunc<TMessage>)!.ExecuteWithObjectAsync(message);
+          await (item.Func as WeakFunc<TMessage>)!.ExecuteWithObjectAsync(message).Fire();
         }
-
-        return Task.CompletedTask;
-      });
-
-      return asyncTask;
+      }
     }
 
     private static void UnregisterFromLists(IMessageReceiver recipient, Dictionary<Type, List<WeakFuncAndToken>> list) {
