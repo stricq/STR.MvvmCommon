@@ -49,7 +49,7 @@ namespace Str.MvvmCommon.Core {
                  .ForEach(type => services.AddSingleton(typeof(IController), type));
         }
 
-        configure.Invoke(services, context.Configuration);
+        configure(services, context.Configuration);
       }).Build();
 
       MvvmLocator.Container = this;
