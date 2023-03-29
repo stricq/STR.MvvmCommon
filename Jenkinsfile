@@ -21,7 +21,7 @@ pipeline {
         dotnetClean(sdk: '.Net 7', configuration: 'Debug')
         dotnetBuild(sdk: '.Net 7', configuration: 'Debug', noRestore: true)
 
-        dotnetTest(sdk: '.Net 7', configuration: 'Debug', noBuild: true, filter: 'TestCategory=Unit')
+        dotnetTest(sdk: '.Net 7 Windows', configuration: 'Debug', noBuild: true, filter: 'TestCategory=Unit')
       }
     }
     stage('Build') {
