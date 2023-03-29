@@ -13,15 +13,15 @@ pipeline {
   stages {
     stage('Restore') {
       steps {
-        powershell 'dotnet restore -s "https://api.nuget.org/v3/index.json"'
+        dotnetRestore(sdk: '.Net 7', source: 'https://api.nuget.org/v3/index.json')
       }
     }
     stage('Unit Test') {
       steps {
-        powershell 'dotnet clean --configuration Debug'
-        powershell 'dotnet build --configuration Debug --no-restore'
+        dotnetClean(sdk: '.Net 7', configuration: 'Debug')
+        dotnetBuild(sdk: '.Net 7', configuration: 'Debug', noRestore: true)
 
-        powershell 'dotnet test --configuration Debug --no-build --filter TestCategory=Unit'
+        dotnetTest(sdk: '.Net 7', configuration: 'Debug', noBuild: true, filter: 'TestCategory=Unit')
       }
     }
     stage('Build') {
@@ -41,33 +41,25 @@ pipeline {
           }
         }
 
-        powershell 'Write-Host "BRANCH_VERSION = $env:BRANCH_VERSION"'
+        sh "echo BRANCH_VERSION = ${env:BRANCH_VERSION}"
 
-        powershell 'dotnet clean --configuration Release'
-        powershell 'dotnet build --configuration Release --no-restore -p:Version="$env:BRANCH_VERSION" -p:PublishRepositoryUrl=true'
+        dotnetClean(sdk: '.Net 7', configuration: 'Release')
+        dotnetBuild(sdk: '.Net 7', configuration: 'Release', noRestore: true, optionsString: "-p:Version=${env.BRANCH_VERSION} -p:PublishRepositoryUrl=true -p:ContinuousIntegrationBuild=true")
       }
     }
     stage('Package') {
       when { anyOf { branch 'prerelease*'; branch 'release*' } }
       steps {
-        powershell 'Remove-Item -Recurse -Force "$env:WORKSPACE\\nuget" -ErrorAction Ignore'
+        sh "rm -rf '${env:WORKSPACE}/nuget'"
 
-        powershell 'dotnet pack --configuration Release --no-build --include-symbols -p:IncludeSymbols=true -p:SymbolPackageFormat=snupkg -p:PackageVersion="$env:BRANCH_VERSION" --output "$env:WORKSPACE\\nuget"'
+        dotnetPack(sdk: '.Net 7', configuration: 'Release', noBuild: true, includeSymbols: true, optionsString: "-p:IncludeSymbols=true -p:SymbolPackageFormat=snupkg -p:PackageVersion='${env:BRANCH_VERSION}'", outputDirectory: "${env.WORKSPACE}/nuget")
       }
     }
     stage('Publish') {
       when { anyOf { branch 'prerelease*'; branch 'release*' } }
-      environment {
-        NUGET_API_KEY = credentials('nuget-api-key')
-      }
       steps {
-        powershell 'dotnet nuget push "$env:WORKSPACE\\nuget\\*.nupkg" -k "$env:NUGET_API_KEY" -s https://api.nuget.org/v3/index.json'
+        dotnetNuGetPush(sdk: '.Net 7', root: "${env:WORKSPACE}/nuget/*.nupkg", apiKeyId: 'nuget-api-key', source: 'https://api.nuget.org/v3/index.json')
       }
-    }
-  }
-  post {
-    always {
-      cleanWs(cleanWhenSuccess: false)
     }
   }
 }
