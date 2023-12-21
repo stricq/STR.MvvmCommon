@@ -28,20 +28,16 @@ namespace Str.MvvmCommon.Behaviors {
     }
 
     private static void OnInitializedCommandChanged(DependencyObject o, DependencyPropertyChangedEventArgs e) {
-      if (!(o is FrameworkElement element)) return;
+      if (o is not FrameworkElement element) return;
 
-      if (e.OldValue == null && e.NewValue != null) {
-        element.Initialized += OnInitializedChanged;
-      }
-      else if (e.OldValue != null && e.NewValue == null) {
-        element.Initialized -= OnInitializedChanged;
-      }
+      if (e.OldValue == null && e.NewValue != null) element.Initialized += OnInitializedChanged;
+      else if (e is { OldValue: not null, NewValue: null }) element.Initialized -= OnInitializedChanged;
     }
 
     private static void OnInitializedChanged(object? sender, EventArgs e) {
       if (ObservableObject.IsDesignMode) return;
 
-      if (!(sender is FrameworkElement obj)) return;
+      if (sender is not FrameworkElement obj) return;
 
       if (obj.GetValue(InitializedCommandProperty) is ICommandAsync<EventArgs> command && command.CanExecute(e)) command.Execute(e);
     }
@@ -61,14 +57,10 @@ namespace Str.MvvmCommon.Behaviors {
     }
 
     private static void OnLoadedCommandChanged(DependencyObject o, DependencyPropertyChangedEventArgs e) {
-      if (!(o is FrameworkElement element)) return;
+      if (o is not FrameworkElement element) return;
 
-      if (e.OldValue == null && e.NewValue != null) {
-        element.AddHandler(FrameworkElement.LoadedEvent, new RoutedEventHandler(OnLoadedChanged), false);
-      }
-      else if (e.OldValue != null && e.NewValue == null) {
-        element.RemoveHandler(FrameworkElement.LoadedEvent, new RoutedEventHandler(OnLoadedChanged));
-      }
+      if (e.OldValue == null && e.NewValue != null) element.AddHandler(FrameworkElement.LoadedEvent, new RoutedEventHandler(OnLoadedChanged), false);
+      else if (e is { OldValue: not null, NewValue: null }) element.RemoveHandler(FrameworkElement.LoadedEvent, new RoutedEventHandler(OnLoadedChanged));
     }
 
     private static void OnLoadedChanged(object sender, RoutedEventArgs e) {
@@ -76,7 +68,7 @@ namespace Str.MvvmCommon.Behaviors {
 
       if (ObservableObject.IsDesignMode) return;
 
-      if (!(sender is FrameworkElement obj)) return;
+      if (sender is not FrameworkElement obj) return;
 
       if (obj.GetValue(LoadedCommandProperty) is ICommandAsync<RoutedEventArgs> command && command.CanExecute(e)) command.Execute(e);
     }
@@ -96,14 +88,10 @@ namespace Str.MvvmCommon.Behaviors {
     }
 
     private static void OnSizeChangedCommandChanged(DependencyObject o, DependencyPropertyChangedEventArgs e) {
-      if (!(o is FrameworkElement element)) return;
+      if (o is not FrameworkElement element) return;
 
-      if (e.OldValue == null && e.NewValue != null) {
-        element.AddHandler(FrameworkElement.SizeChangedEvent, new SizeChangedEventHandler(OnSizeChanged), false);
-      }
-      else if (e.OldValue != null && e.NewValue == null) {
-        element.RemoveHandler(FrameworkElement.SizeChangedEvent, new SizeChangedEventHandler(OnSizeChanged));
-      }
+      if (e.OldValue == null && e.NewValue != null) element.AddHandler(FrameworkElement.SizeChangedEvent, new SizeChangedEventHandler(OnSizeChanged), false);
+      else if (e is { OldValue: not null, NewValue: null }) element.RemoveHandler(FrameworkElement.SizeChangedEvent, new SizeChangedEventHandler(OnSizeChanged));
     }
 
     private static void OnSizeChanged(object sender, SizeChangedEventArgs e) {
@@ -111,7 +99,7 @@ namespace Str.MvvmCommon.Behaviors {
 
       if (ObservableObject.IsDesignMode) return;
 
-      if (!(sender is FrameworkElement obj)) return;
+      if (sender is not FrameworkElement obj) return;
 
       if (obj.GetValue(SizeChangedCommandProperty) is ICommandAsync<SizeChangedEventArgs> command && command.CanExecute(e)) command.Execute(e);
     }
@@ -131,20 +119,16 @@ namespace Str.MvvmCommon.Behaviors {
     }
 
     private static void OnContextMenuOpeningCommandChanged(DependencyObject o, DependencyPropertyChangedEventArgs e) {
-      if (!(o is FrameworkElement element)) return;
+      if (o is not FrameworkElement element) return;
 
-      if (e.OldValue == null && e.NewValue != null) {
-        element.AddHandler(FrameworkElement.ContextMenuOpeningEvent, new ContextMenuEventHandler(OnContextMenuOpening), false);
-      }
-      else if (e.OldValue != null && e.NewValue == null) {
-        element.RemoveHandler(FrameworkElement.ContextMenuOpeningEvent, new ContextMenuEventHandler(OnContextMenuOpening));
-      }
+      if (e.OldValue == null && e.NewValue != null) element.AddHandler(FrameworkElement.ContextMenuOpeningEvent, new ContextMenuEventHandler(OnContextMenuOpening), false);
+      else if (e is { OldValue: not null, NewValue: null }) element.RemoveHandler(FrameworkElement.ContextMenuOpeningEvent, new ContextMenuEventHandler(OnContextMenuOpening));
     }
 
     private static void OnContextMenuOpening(object sender, ContextMenuEventArgs e) {
       if (ObservableObject.IsDesignMode) return;
 
-      if (!(sender is FrameworkElement obj)) return;
+      if (sender is not FrameworkElement obj) return;
 
       if (obj.GetValue(ContextMenuOpeningCommandProperty) is ICommandAsync<ContextMenuEventArgs> command && command.CanExecute(e)) command.Execute(e);
     }
@@ -164,20 +148,16 @@ namespace Str.MvvmCommon.Behaviors {
     }
 
     private static void OnContextMenuClosingCommandChanged(DependencyObject o, DependencyPropertyChangedEventArgs e) {
-      if (!(o is FrameworkElement element)) return;
+      if (o is not FrameworkElement element) return;
 
-      if (e.OldValue == null && e.NewValue != null) {
-        element.AddHandler(FrameworkElement.ContextMenuClosingEvent, new ContextMenuEventHandler(OnContextMenuClosing), false);
-      }
-      else if (e.OldValue != null && e.NewValue == null) {
-        element.RemoveHandler(FrameworkElement.ContextMenuClosingEvent, new ContextMenuEventHandler(OnContextMenuClosing));
-      }
+      if (e.OldValue == null && e.NewValue != null) element.AddHandler(FrameworkElement.ContextMenuClosingEvent, new ContextMenuEventHandler(OnContextMenuClosing), false);
+      else if (e is { OldValue: not null, NewValue: null }) element.RemoveHandler(FrameworkElement.ContextMenuClosingEvent, new ContextMenuEventHandler(OnContextMenuClosing));
     }
 
     private static void OnContextMenuClosing(object sender, ContextMenuEventArgs e) {
       if (ObservableObject.IsDesignMode) return;
 
-      if (!(sender is FrameworkElement obj)) return;
+      if (sender is not FrameworkElement obj) return;
 
       if (obj.GetValue(ContextMenuClosingCommandProperty) is ICommandAsync<ContextMenuEventArgs> command && command.CanExecute(e)) command.Execute(e);
     }
@@ -199,18 +179,14 @@ namespace Str.MvvmCommon.Behaviors {
     private static void OnDataTemplateInjectorChanged(DependencyObject o, DependencyPropertyChangedEventArgs e) {
       if (ObservableObject.IsDesignMode) return;
 
-      if (!(o is FrameworkElement) || !(e.NewValue is IEnumerable<IViewLocator> views)) return;
+      if (o is not FrameworkElement || e.NewValue is not IEnumerable<IViewLocator> views) return;
 
       foreach(IViewLocator view in views) {
-        if (view?.DataContext == null) continue;
-
         DataTemplate? dt = CreateTemplate(view.DataContext.GetType(), view.GetType());
 
         if (dt?.DataTemplateKey == null) continue;
 
-        if (!Application.Current.Resources.Contains(dt.DataTemplateKey)) {
-          Application.Current.Resources.Add(dt.DataTemplateKey, dt);
-        }
+        if (!Application.Current.Resources.Contains(dt.DataTemplateKey)) Application.Current.Resources.Add(dt.DataTemplateKey, dt);
       }
     }
 
@@ -219,7 +195,7 @@ namespace Str.MvvmCommon.Behaviors {
 
       string xaml = String.Format(xamlTemplate, viewModelType.Name, viewType.Name);
 
-      ParserContext context = new ParserContext { XamlTypeMapper = new XamlTypeMapper(new string[0]) };
+      ParserContext context = new() { XamlTypeMapper = new XamlTypeMapper(Array.Empty<string>()) };
 
       context.XamlTypeMapper.AddMappingProcessingInstruction("vm", viewModelType.Namespace ?? String.Empty, viewModelType.Assembly.FullName ?? String.Empty);
       context.XamlTypeMapper.AddMappingProcessingInstruction("v", viewType.Namespace ?? String.Empty, viewType.Assembly.FullName ?? String.Empty);

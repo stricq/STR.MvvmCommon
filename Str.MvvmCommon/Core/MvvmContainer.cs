@@ -27,7 +27,7 @@ namespace Str.MvvmCommon.Core {
 
     #region Private Fields
 
-    private readonly ArgumentNullException hostNullException = new ArgumentNullException(nameof(host), "The container has not been initialized.  Please call the Initialize() method first.");
+    private readonly ArgumentNullException hostNullException = new(nameof(host), "The container has not been initialized.  Please call the Initialize() method first.");
 
     private IHost? host;
 
@@ -49,7 +49,7 @@ namespace Str.MvvmCommon.Core {
                  .ForEach(type => services.AddSingleton(typeof(IController), type));
         }
 
-        configure.Invoke(services, context.Configuration);
+        configure(services, context.Configuration);
       }).Build();
 
       MvvmLocator.Container = this;

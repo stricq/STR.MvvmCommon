@@ -9,8 +9,9 @@ using Str.MvvmCommon.Core;
 
 namespace Str.MvvmCommon.Behaviors {
 
-  [SuppressMessage("ReSharper", "UnusedMember.Global")]
-  [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
+  [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "This is a library.")]
+  [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "This is a library.")]
+  [SuppressMessage("ReSharper", "UnusedType.Global", Justification = "This is a library.")]
   public static class WindowBehaviors {
 
     #region Closing Command
@@ -26,20 +27,16 @@ namespace Str.MvvmCommon.Behaviors {
     }
 
     private static void OnClosingCommandChanged(DependencyObject o, DependencyPropertyChangedEventArgs e) {
-      if (!(o is Window element)) return;
+      if (o is not Window element) return;
 
-      if (e.OldValue == null && e.NewValue != null) {
-        element.Closing += OnClosingChanged;
-      }
-      else if (e.OldValue != null && e.NewValue == null) {
-        element.Closing -= OnClosingChanged;
-      }
+      if (e.OldValue == null && e.NewValue != null) element.Closing += OnClosingChanged;
+      else if (e is { OldValue: not null, NewValue: null }) element.Closing -= OnClosingChanged;
     }
 
-    private static void OnClosingChanged(object sender, CancelEventArgs e) {
+    private static void OnClosingChanged(object? sender, CancelEventArgs e) {
       if (ObservableObject.IsDesignMode) return;
 
-      if (!(sender is Window obj)) return;
+      if (sender is not Window obj) return;
 
       if (obj.GetValue(ClosingCommandProperty) is ICommandAsync<CancelEventArgs> command && command.CanExecute(e)) command.Execute(e);
     }
@@ -59,7 +56,7 @@ namespace Str.MvvmCommon.Behaviors {
     }
 
     private static void OnShowPropertyChanged(DependencyObject o, DependencyPropertyChangedEventArgs e) {
-      if (!(o is Window element) || e.NewValue as Action == element.Show) return;
+      if (o is not Window element || e.NewValue as Action == element.Show) return;
 
       SetShow(o, element.Show);
     }
@@ -79,7 +76,7 @@ namespace Str.MvvmCommon.Behaviors {
     }
 
     private static void OnHidePropertyChanged(DependencyObject o, DependencyPropertyChangedEventArgs e) {
-      if (!(o is Window element) || e.NewValue as Action == element.Hide) return;
+      if (o is not Window element || e.NewValue as Action == element.Hide) return;
 
       SetHide(o, element.Hide);
     }
@@ -99,7 +96,7 @@ namespace Str.MvvmCommon.Behaviors {
     }
 
     private static void OnActivatePropertyChanged(DependencyObject o, DependencyPropertyChangedEventArgs e) {
-      if (!(o is Window element) || e.NewValue as Func<bool> == element.Activate) return;
+      if (o is not Window element || e.NewValue as Func<bool> == element.Activate) return;
 
       SetActivate(o, element.Activate);
     }
