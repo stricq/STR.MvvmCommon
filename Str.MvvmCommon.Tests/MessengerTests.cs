@@ -18,8 +18,8 @@ namespace Str.MvvmCommon.Tests {
     private static int counter;
 
     [TestMethod, TestCategory("Unit")]
-    public async Task RegisterRecipient() {
-      Messenger messenger = new Messenger();
+    public async Task RegisterRecipientAsync() {
+      Messenger messenger = new();
 
       messenger.Register<MessageA>(this, Receiver);
       messenger.Register<MessageA>(this, Receiver);
@@ -43,8 +43,8 @@ namespace Str.MvvmCommon.Tests {
 
   }
 
-  public class MessageA : MessageBase { }
+  public class MessageA : MessageBase;
 
-  public class MessageB : MessageBase { }
+  public class MessageB : MessageBase;
 
 }
