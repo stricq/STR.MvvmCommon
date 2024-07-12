@@ -1,8 +1,7 @@
-﻿
+﻿namespace Str.MvvmCommon.Helpers;
 
-namespace Str.MvvmCommon.Helpers {
 
-  internal interface IWeakFunc {
+internal interface IWeakFunc {
 
     bool IsAlive { get; }
 
@@ -11,7 +10,5 @@ namespace Str.MvvmCommon.Helpers {
     object? Target { get; }
 
     void MarkForDeletion();
-
-  }
 
 }

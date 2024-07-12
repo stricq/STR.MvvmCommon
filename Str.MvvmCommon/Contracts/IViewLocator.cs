@@ -1,11 +1,8 @@
-﻿
+﻿namespace Str.MvvmCommon.Contracts;
 
-namespace Str.MvvmCommon.Contracts {
 
-  public interface IViewLocator {
+public interface IViewLocator {
 
     object DataContext { get; set; }
-
-  }
 
 }

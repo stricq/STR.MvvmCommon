@@ -7,10 +7,12 @@ using Str.Common.Extensions;
 using Str.MvvmCommon.Contracts;
 
 
-namespace Str.MvvmCommon.Core {
+namespace Str.MvvmCommon.Core;
 
-  [SuppressMessage("ReSharper", "UnusedType.Global", Justification = "This is a library.")]
-  public class RelayCommandAsync<T> : ICommandAsync<T> {
+
+[SuppressMessage("ReSharper", "UnusedType.Global", Justification = "This is a library.")]
+[SuppressMessage("ReSharper", "InconsistentNaming")]
+public class RelayCommandAsync<T> : ICommandAsync<T> {
 
     #region Private Fields
 
@@ -22,9 +24,9 @@ namespace Str.MvvmCommon.Core {
 
     #region Constructor
 
-    public RelayCommandAsync(Func<T, Task> ExecuteAsync, Predicate<T>? CanExecute = null) {
-      executeAsync = ExecuteAsync ?? throw new ArgumentNullException(nameof(ExecuteAsync));
-      canExecute   = CanExecute;
+    public RelayCommandAsync(Func<T, Task> executeAsync, Predicate<T>? canExecute = null) {
+        this.executeAsync = executeAsync ?? throw new ArgumentNullException(nameof(executeAsync));
+        this.canExecute = canExecute;
     }
 
     #endregion Constructor
@@ -32,16 +34,16 @@ namespace Str.MvvmCommon.Core {
     #region ICommandAsync<T> Implementation
 
     public bool CanExecute(T Parameter) {
-      return canExecute == null || canExecute(Parameter);
+        return canExecute == null || canExecute(Parameter);
     }
 
     public event EventHandler? CanExecuteChanged {
-      add    => CommandManager.RequerySuggested += value;
-      remove => CommandManager.RequerySuggested -= value;
+        add => CommandManager.RequerySuggested += value;
+        remove => CommandManager.RequerySuggested -= value;
     }
 
     public Task ExecuteAsync(T Parameter) {
-      return executeAsync(Parameter);
+        return executeAsync(Parameter);
     }
 
     #endregion ICommandAsync<T> Implementation
@@ -49,22 +51,23 @@ namespace Str.MvvmCommon.Core {
     #region ICommand Implementation
 
     bool ICommand.CanExecute(object? parameter) {
-      if (parameter is T casted) return CanExecute(casted);
+        if (parameter is T casted) return CanExecute(casted);
 
-      return false;
+        return false;
     }
 
     void ICommand.Execute(object? parameter) {
-      if (parameter is T casted) ExecuteAsync(casted).FireAndWait();
+        if (parameter is T casted) ExecuteAsync(casted).FireAndWait();
     }
 
     #endregion ICommand Implementation
 
-  }
+}
 
 
-  [SuppressMessage("ReSharper", "UnusedType.Global", Justification = "This is a library.")]
-  public class RelayCommandAsync : ICommandAsync {
+[SuppressMessage("ReSharper", "UnusedType.Global", Justification = "This is a library.")]
+[SuppressMessage("ReSharper", "InconsistentNaming")]
+public class RelayCommandAsync : ICommandAsync {
 
     #region Private Fields
 
@@ -76,9 +79,9 @@ namespace Str.MvvmCommon.Core {
 
     #region Constructor
 
-    public RelayCommandAsync(Func<Task> ExecuteAsync, Func<bool>? CanExecute = null) {
-      executeAsync = ExecuteAsync ?? throw new ArgumentNullException(nameof(ExecuteAsync));
-      canExecute   = CanExecute;
+    public RelayCommandAsync(Func<Task> executeAsync, Func<bool>? canExecute = null) {
+        this.executeAsync = executeAsync ?? throw new ArgumentNullException(nameof(executeAsync));
+        this.canExecute = canExecute;
     }
 
     #endregion Constructor
@@ -86,16 +89,16 @@ namespace Str.MvvmCommon.Core {
     #region ICommandAsync Implementation
 
     public bool CanExecute() {
-      return canExecute == null || canExecute();
+        return canExecute == null || canExecute();
     }
 
     public event EventHandler? CanExecuteChanged {
-      add    => CommandManager.RequerySuggested += value;
-      remove => CommandManager.RequerySuggested -= value;
+        add => CommandManager.RequerySuggested += value;
+        remove => CommandManager.RequerySuggested -= value;
     }
 
     public Task ExecuteAsync() {
-      return executeAsync();
+        return executeAsync();
     }
 
     #endregion ICommandAsync Implementation
@@ -103,15 +106,13 @@ namespace Str.MvvmCommon.Core {
     #region ICommand Implementation
 
     bool ICommand.CanExecute(object? parameter) {
-      return CanExecute();
+        return CanExecute();
     }
 
     void ICommand.Execute(object? parameter) {
-      ExecuteAsync().FireAndWait();
+        ExecuteAsync().FireAndWait();
     }
 
     #endregion ICommand Implementation
-
-  }
 
 }

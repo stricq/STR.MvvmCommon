@@ -1,13 +1,16 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Threading.Tasks;
 
 using Str.MvvmCommon.Contracts;
 
 
-namespace Str.MvvmCommon.Helpers {
+namespace Str.MvvmCommon.Helpers;
 
-  internal class WeakFunc<TMessage> : IWeakFunc {
+
+[SuppressMessage("ReSharper", "InconsistentNaming")]
+internal class WeakFunc<TMessage> : IWeakFunc {
 
     #region Private Fields
 
@@ -24,19 +27,19 @@ namespace Str.MvvmCommon.Helpers {
     #region Constructor
 
     public WeakFunc(IMessageReceiver target, Func<TMessage, Task> action) {
-      //
-      // Keep a reference to the target to control the WeakAction's lifetime.
-      //
-      reference = new WeakReference(target);
+        //
+        // Keep a reference to the target to control the WeakAction's lifetime.
+        //
+        reference = new WeakReference(target);
 
-      if (action.Method.IsStatic) {
-        staticFunc = action;
+        if (action.Method.IsStatic) {
+            staticFunc = action;
 
-        return;
-      }
+            return;
+        }
 
-      method          = action.Method;
-      actionReference = new WeakReference(action.Target);
+        method = action.Method;
+        actionReference = new WeakReference(action.Target);
     }
 
     #endregion Constructor
@@ -50,11 +53,11 @@ namespace Str.MvvmCommon.Helpers {
     public object? Target => reference.Target;
 
     public void MarkForDeletion() {
-      staticFunc = null;
+        staticFunc = null;
 
-      reference       = new WeakReference(null);
-      actionReference = null;
-      method          = null;
+        reference = new WeakReference(null);
+        actionReference = null;
+        method = null;
     }
 
     #endregion IWeakFunc Implementation
@@ -62,19 +65,15 @@ namespace Str.MvvmCommon.Helpers {
     #region Public Methods
 
     public Task ExecuteWithObjectAsync(TMessage parameter) {
-      if (staticFunc != null) {
-        return staticFunc(parameter);
-      }
+        if (staticFunc != null) return staticFunc(parameter);
 
-      if (!IsAlive || method == null || actionReference == null) return Task.CompletedTask;
+        if (!IsAlive || method == null || actionReference == null) return Task.CompletedTask;
 
-      if (Delegate.CreateDelegate(typeof(Func<TMessage, Task>), actionReference?.Target, method) is Func<TMessage, Task> func) return func(parameter);
+        if (Delegate.CreateDelegate(typeof(Func<TMessage, Task>), actionReference?.Target, method) is Func<TMessage, Task> func) return func(parameter);
 
-      return Task.CompletedTask;
+        return Task.CompletedTask;
     }
 
     #endregion Public Methods
-
-  }
 
 }
