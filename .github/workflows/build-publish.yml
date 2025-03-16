@@ -62,7 +62,7 @@ jobs:
           $branch_version = "$version+$git_hash"
         }
         elseif ($branch -eq "dev") {
-          $branch_version = "$branch-pre.$jdate+$git_hash"
+          $branch_version = "9.0.0-pre.$jdate+$git_hash"
         }
         else {
           $branch_version = "$version-pre.$jdate+$git_hash"
