@@ -1,14 +1,10 @@
-﻿using System.Threading.Tasks;
+﻿namespace Str.MvvmCommon.Contracts;
 
 
-namespace Str.MvvmCommon.Contracts {
-
-  public interface IController {
+public interface IController {
 
     int InitializePriority { get; }
 
     Task InitializeAsync();
-
-  }
 
 }

@@ -10,41 +10,40 @@ using Str.MvvmCommon.Contracts;
 using Str.MvvmCommon.Services;
 
 
-namespace Str.MvvmCommon.Tests {
+namespace Str.MvvmCommon.Tests;
 
-  [TestClass]
-  public class MessengerTests : IMessageReceiver {
+
+[TestClass]
+public class MessengerTests : IMessageReceiver {
 
     private static int counter;
 
     [TestMethod, TestCategory("Unit")]
     public async Task RegisterRecipientAsync() {
-      Messenger messenger = new();
+        Messenger messenger = new();
 
-      messenger.Register<MessageA>(this, Receiver);
-      messenger.Register<MessageA>(this, Receiver);
+        messenger.Register<MessageA>(this, Receiver);
+        messenger.Register<MessageA>(this, Receiver);
 
-      static Task Receiver(MessageA message) {
-        Interlocked.Increment(ref counter);
+        static Task Receiver(MessageA message) {
+            Interlocked.Increment(ref counter);
 
-        return Task.CompletedTask;
-      }
+            return Task.CompletedTask;
+        }
 
-      await messenger.SendAsync(new MessageA()).Fire();
+        await messenger.SendAsync(new MessageA()).Fire();
 
-      await messenger.SendAsync(new MessageB()).Fire();
+        await messenger.SendAsync(new MessageB()).Fire();
 
-      messenger.Unregister(this);
+        messenger.Unregister(this);
 
-      await messenger.SendAsync(new MessageA()).Fire();
+        await messenger.SendAsync(new MessageA()).Fire();
 
-      Assert.AreEqual(2, counter);
+        Assert.AreEqual(2, counter);
     }
 
-  }
-
-  public class MessageA : MessageBase;
-
-  public class MessageB : MessageBase;
-
 }
+
+public class MessageA : MessageBase;
+
+public class MessageB : MessageBase;

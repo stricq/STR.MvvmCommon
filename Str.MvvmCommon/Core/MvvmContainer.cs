@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
+﻿using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
-using System.Threading.Tasks;
 using System.Windows.Markup;
 
 using Microsoft.Extensions.Configuration;
@@ -20,10 +16,11 @@ using Str.MvvmCommon.Services;
 [assembly: XmlnsDefinition("http://schemas.stricq.com/mvvmcommon", "Str.MvvmCommon.Behaviors")]
 
 
-namespace Str.MvvmCommon.Core {
+namespace Str.MvvmCommon.Core;
 
-  [SuppressMessage("ReSharper", "UnusedType.Global", Justification = "This is a library.")]
-  public class MvvmContainer : IMvvmContainer {
+
+[SuppressMessage("ReSharper", "UnusedType.Global", Justification = "This is a library.")]
+public class MvvmContainer : IMvvmContainer {
 
     #region Private Fields
 
@@ -36,79 +33,73 @@ namespace Str.MvvmCommon.Core {
     #region IMvvmContainer Implementation
 
     public void Initialize(Action<IServiceCollection, IConfiguration> configure) {
-      host = Host.CreateDefaultBuilder().ConfigureServices((context, services) => {
-        services.AddSingleton<IMessenger, Messenger>();
+        host = Host.CreateDefaultBuilder().ConfigureServices((context, services) => {
+            services.AddSingleton<IMessenger, Messenger>();
 
-        List<Type>? classes = Assembly.GetEntryAssembly()?.GetTypes().Where(type => type.IsClass).ToList();
+            List<Type>? classes = Assembly.GetEntryAssembly()?.GetTypes().Where(type => type.IsClass).ToList();
 
-        if (classes != null) {
-          classes.Where(type => type.Name.EndsWith("View") || type.Name.EndsWith("ViewModel"))
-                 .ForEach(type => services.AddSingleton(type));
+            if (classes != null) {
+                classes.Where(type => type.Name.EndsWith("View") || type.Name.EndsWith("ViewModel"))
+                       .ForEach(type => services.AddSingleton(type));
 
-          classes.Where(type => typeof(IController).IsAssignableFrom(type) && type.Name.EndsWith("Controller"))
-                 .ForEach(type => services.AddSingleton(typeof(IController), type));
-        }
+                classes.Where(type => typeof(IController).IsAssignableFrom(type) && type.Name.EndsWith("Controller"))
+                       .ForEach(type => services.AddSingleton(typeof(IController), type));
+            }
 
-        configure(services, context.Configuration);
-      }).Build();
+            configure(services, context.Configuration);
+        }).Build();
 
-      MvvmLocator.Container = this;
+        MvvmLocator.Container = this;
     }
 
     public async Task InitializeControllersAsync(bool descending = false) {
-      IEnumerable<IController> controllers = GetAll<IController>();
+        IEnumerable<IController> controllers = GetAll<IController>();
 
-      IEnumerable<IGrouping<int, IController>> groups = controllers.GroupBy(c => c.InitializePriority);
+        IEnumerable<IGrouping<int, IController>> groups = controllers.GroupBy(c => c.InitializePriority);
 
-      groups = descending ? groups.OrderByDescending(g => g.Key) : groups.OrderBy(g => g.Key);
+        groups = descending ? groups.OrderByDescending(g => g.Key) : groups.OrderBy(g => g.Key);
 
-      foreach(IGrouping<int, IController> group in groups) {
-        await group.ForEachAsync(controller => controller.InitializeAsync()).Fire();
-      }
+        foreach (IGrouping<int, IController> group in groups) await group.ForEachAsync(controller => controller.InitializeAsync()).Fire();
     }
 
     public async Task OnStartupAsync() {
-      if (host == null) throw hostNullException;
+        if (host == null) throw hostNullException;
 
-      await host.StartAsync().Fire();
+        await host.StartAsync().Fire();
 
-      TaskHelper.InitializeOnUiThread();
+        TaskHelper.InitializeOnUiThread();
     }
 
     public async Task OnExitAsync() {
-      if (host == null) throw hostNullException;
+        if (host == null) throw hostNullException;
 
-      using(host) {
-        await host.StopAsync(TimeSpan.FromSeconds(5)).Fire();
-      }
+        using (host) await host.StopAsync(TimeSpan.FromSeconds(5)).Fire();
     }
 
     public object? Get(Type type) {
-      if (host == null) throw hostNullException;
+        if (host == null) throw hostNullException;
 
-      return host.Services.GetService(type);
+        return host.Services.GetService(type);
     }
 
     public T Get<T>() where T : notnull {
-      if (host == null) throw hostNullException;
+        if (host == null) throw hostNullException;
 
-      return host.Services.GetRequiredService<T>();
+        return host.Services.GetRequiredService<T>();
     }
 
     public IEnumerable<object?> GetAll(Type type) {
-      if (host == null) throw hostNullException;
+        if (host == null) throw hostNullException;
 
-      return host.Services.GetServices(type);
+        return host.Services.GetServices(type);
     }
 
     public IEnumerable<T> GetAll<T>() {
-      if (host == null) throw hostNullException;
+        if (host == null) throw hostNullException;
 
-      return host.Services.GetServices<T>();
+        return host.Services.GetServices<T>();
     }
 
     #endregion IMvvmContainer Implementation
-
-  }
 
 }

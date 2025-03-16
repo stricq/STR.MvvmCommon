@@ -1,17 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Threading.Tasks;
+﻿using System.Diagnostics.CodeAnalysis;
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 
-namespace Str.MvvmCommon.Contracts {
+namespace Str.MvvmCommon.Contracts;
 
-  [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "This is a library.")]
-  [SuppressMessage("ReSharper", "UnusedMemberInSuper.Global", Justification = "This is a library.")]
-  public interface IMvvmContainer {
+
+[SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "This is a library.")]
+[SuppressMessage("ReSharper", "UnusedMemberInSuper.Global", Justification = "This is a library.")]
+public interface IMvvmContainer {
 
     void Initialize(Action<IServiceCollection, IConfiguration> configure);
 
@@ -28,7 +26,5 @@ namespace Str.MvvmCommon.Contracts {
     IEnumerable<object?> GetAll(Type type);
 
     IEnumerable<T> GetAll<T>();
-
-  }
 
 }

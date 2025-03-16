@@ -1,12 +1,11 @@
 ﻿using Str.MvvmCommon.Contracts;
 
 
-namespace Str.MvvmCommon.Helpers {
+namespace Str.MvvmCommon.Helpers;
 
-  internal static class MvvmLocator {
+
+internal static class MvvmLocator {
 
     public static IMvvmContainer? Container { get; set; }
-
-  }
 
 }

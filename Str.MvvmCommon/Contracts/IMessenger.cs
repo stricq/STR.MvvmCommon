@@ -1,17 +1,15 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Threading.Tasks;
+﻿using System.Diagnostics.CodeAnalysis;
 
 
-namespace Str.MvvmCommon.Contracts {
-  //
-  // This code is based on code found in MvvmLight.
-  //
-  // https://github.com/lbugnion/mvvmlight/tree/master/GalaSoft.MvvmLight/GalaSoft.MvvmLight%20(PCL)/Messaging
-  //
-  [SuppressMessage("ReSharper", "UnusedMember.Global",        Justification = "This is a library.")]
-  [SuppressMessage("ReSharper", "UnusedMemberInSuper.Global", Justification = "This is a library.")]
-  public interface IMessenger {
+namespace Str.MvvmCommon.Contracts;
+//
+// This code is based on code found in MvvmLight.
+//
+// https://github.com/lbugnion/mvvmlight/tree/master/GalaSoft.MvvmLight/GalaSoft.MvvmLight%20(PCL)/Messaging
+//
+[SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "This is a library.")]
+[SuppressMessage("ReSharper", "UnusedMemberInSuper.Global", Justification = "This is a library.")]
+public interface IMessenger {
 
     #region Register
 
@@ -27,13 +25,13 @@ namespace Str.MvvmCommon.Contracts {
 
     #region SendAsync
 
-    Task SendAsync<TMessage>(TMessage message, object? token = default);
+    Task SendAsync<TMessage>(TMessage message, object? token = null);
 
     #endregion SendAsync
 
     #region SendOnUiThreadAsync
 
-    Task SendOnUiThreadAsync<TMessage>(TMessage message, object? token = default);
+    Task SendOnUiThreadAsync<TMessage>(TMessage message, object? token = null);
 
     #endregion SendOnUiThreadAsync
 
@@ -48,7 +46,5 @@ namespace Str.MvvmCommon.Contracts {
     void Unregister<TMessage>(IMessageReceiver recipient, object token, Func<TMessage, Task> action);
 
     #endregion Unregister
-
-  }
 
 }
