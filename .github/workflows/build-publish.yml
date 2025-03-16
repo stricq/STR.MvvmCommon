@@ -4,7 +4,7 @@ on: [create, push, workflow_dispatch]
 env:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
   DOTNET_NOLOGO: true
-  NUGET_DIR: ${{ github.workspace }}/nuget
+  NUGET_DIR: ${{ github.workspace }}\nuget
 
 jobs:
   unit_tests:
