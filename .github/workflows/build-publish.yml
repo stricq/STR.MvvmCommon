@@ -33,7 +33,7 @@ jobs:
       run: dotnet test --configuration Debug --no-build --filter TestCategory=Unit
 
   build_publish:
-    if: ${{ startsWith(github.ref_name, 'prerelease') || startsWith(github.ref_name, 'release') }}
+    # if: ${{ startsWith(github.ref_name, 'prerelease') || startsWith(github.ref_name, 'release') }}
     runs-on: windows-latest
     needs: [unit_tests]
     steps:
@@ -82,6 +82,7 @@ jobs:
       run: dotnet pack --configuration Release --no-build --include-symbols -p:IncludeSymbols=true -p:SymbolPackageFormat=snupkg -p:PackageVersion="$env:BranchVersion" --output "$env:NUGET_DIR"
 
     - name: Publish Nuget
+      if: ${{ startsWith(github.ref_name, 'prerelease') || startsWith(github.ref_name, 'release') }}
       env:
         NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
-      run: dotnet nuget push "$env:NUGET_DIR/*.nupkg" -k "$env:NUGET_API_KEY" -s https://api.nuget.org/v3/index.json --skip-duplicate
+      run: dotnet nuget push "$env:NUGET_DIR\*.nupkg" -k "$env:NUGET_API_KEY" -s https://api.nuget.org/v3/index.json --skip-duplicate
