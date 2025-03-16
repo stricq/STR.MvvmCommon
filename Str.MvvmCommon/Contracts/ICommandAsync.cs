@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using System.Threading.Tasks;
 using System.Windows.Input;
 
 
@@ -14,6 +13,7 @@ public interface ICommandAsync : ICommand {
     bool CanExecute();
 
 }
+
 
 [SuppressMessage("ReSharper", "UnusedMemberInSuper.Global", Justification = "This is a library.")]
 public interface ICommandAsync<in T> : ICommand {

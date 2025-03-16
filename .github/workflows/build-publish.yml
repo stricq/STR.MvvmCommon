@@ -1,0 +1,87 @@
+﻿name: Build and Publish
+on: [create, push, workflow_dispatch]
+
+env:
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
+  DOTNET_NOLOGO: true
+  NUGET_DIR: ${{ github.workspace }}/nuget
+
+jobs:
+  unit_tests:
+    runs-on: windows-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Setup .Net
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 9.x
+        cache: true
+        cache-dependency-path: '**/packages.lock.json'
+
+    - name: Restore Nuget Packages
+      run: dotnet restore --locked-mode
+
+    - name: Clean Debug
+      run: dotnet clean --configuration Debug
+
+    - name: Build Debug
+      run: dotnet build --configuration Debug --no-restore --packages ./.nuget/packages
+
+    - name: Unit Tests
+      run: dotnet test --configuration Debug --no-build --filter TestCategory=Unit
+
+  build_publish:
+    if: ${{ startsWith(github.ref_name, 'prerelease') || startsWith(github.ref_name, 'release') }}
+    runs-on: windows-latest
+    needs: [unit_tests]
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Setup .Net
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 9.x
+        cache: true
+        cache-dependency-path: '**/packages.lock.json'
+
+    - name: Setup Environment Variables
+      run: |
+        $git_hash = "${{ github.sha }}".Substring(0, 7)
+
+        $jdate = "$(Get-Date -Format "yy")$((Get-Date).DayOfYear.ToString("000"))$(Get-Date -Format "HHmm")"
+
+        $values = "${{ github.ref_name }}".Split("_")
+
+        $branch  = $values[0]
+        $version = $values[1]
+
+        if ($branch -eq "release") {
+          $branch_version = "$version+$git_hash"
+        }
+        else {
+          $branch_version = "$version-pre.$jdate+$git_hash"
+        }
+
+        Write-Host $branch_version
+
+        Add-Content -Path $env:GITHUB_ENV -Value "BranchVersion=$branch_version"
+
+    - name: Restore Nuget Packages
+      run: dotnet restore --locked-mode
+
+    - name: Clean Release
+      run: dotnet clean --configuration Release
+
+    - name: Build Release
+      run: dotnet build --configuration Release --no-restore -p:Version="$env:BranchVersion" -p:PublishRepositoryUrl=true
+
+    - name: Package Nuget
+      run: dotnet pack --configuration Release --no-build --include-symbols -p:IncludeSymbols=true -p:SymbolPackageFormat=snupkg -p:PackageVersion="$env:BranchVersion" --output "$env:NUGET_DIR"
+
+    - name: Publish Nuget
+      env:
+        NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+      run: dotnet nuget push "$env:NUGET_DIR/*.nupkg" -k "$env:NUGET_API_KEY" -s https://api.nuget.org/v3/index.json --skip-duplicate

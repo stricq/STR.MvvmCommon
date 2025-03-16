@@ -1,6 +1,4 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Threading.Tasks;
+﻿using System.Diagnostics.CodeAnalysis;
 
 
 namespace Str.MvvmCommon.Contracts;
@@ -27,13 +25,13 @@ public interface IMessenger {
 
     #region SendAsync
 
-    Task SendAsync<TMessage>(TMessage message, object? token = default);
+    Task SendAsync<TMessage>(TMessage message, object? token = null);
 
     #endregion SendAsync
 
     #region SendOnUiThreadAsync
 
-    Task SendOnUiThreadAsync<TMessage>(TMessage message, object? token = default);
+    Task SendOnUiThreadAsync<TMessage>(TMessage message, object? token = null);
 
     #endregion SendOnUiThreadAsync
 

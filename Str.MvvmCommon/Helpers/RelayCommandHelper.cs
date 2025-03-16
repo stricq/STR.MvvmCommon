@@ -1,6 +1,4 @@
-﻿using System.Threading.Tasks;
-
-using JetBrains.Annotations;
+﻿using JetBrains.Annotations;
 
 using Str.MvvmCommon.Core;
 

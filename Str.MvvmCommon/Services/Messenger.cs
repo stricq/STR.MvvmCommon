@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Diagnostics.CodeAnalysis;
 using System.Windows.Threading;
 
 using Str.Common.Extensions;
@@ -25,12 +21,12 @@ public class Messenger : IMessenger {
 
     private bool isCleanupRegistered;
 
-    private readonly Dictionary<Type, List<WeakFuncAndToken>> recipientsOfSubclassesAction = new();
-    private readonly Dictionary<Type, List<WeakFuncAndToken>> recipientsStrictAction       = new();
+    private readonly Dictionary<Type, List<WeakFuncAndToken>> recipientsOfSubclassesAction = [];
+    private readonly Dictionary<Type, List<WeakFuncAndToken>> recipientsStrictAction       = [];
 
-    private readonly object registerLock = new();
+    private readonly Lock registerLock = new();
 
-    private struct WeakFuncAndToken {
+    private record struct WeakFuncAndToken {
         public IWeakFunc Func;
 
         public object? Token;
@@ -90,7 +86,7 @@ public class Messenger : IMessenger {
 
     #region SendAsync
 
-    public Task SendAsync<TMessage>(TMessage message, object? token = default) {
+    public Task SendAsync<TMessage>(TMessage message, object? token = null) {
         return SendToTargetAsync(message, token);
     }
 
@@ -98,7 +94,7 @@ public class Messenger : IMessenger {
 
     #region SendOnUiThreadAsync
 
-    public Task SendOnUiThreadAsync<TMessage>(TMessage message, object? token = default) {
+    public Task SendOnUiThreadAsync<TMessage>(TMessage message, object? token = null) {
         return TaskHelper.RunOnUiThreadAsync(() => SendToTargetAsync(message, token));
     }
 
@@ -149,7 +145,7 @@ public class Messenger : IMessenger {
         foreach(Type type in clone.Keys) {
             if (messageType != type && !messageType.IsSubclassOf(type) && !type.IsAssignableFrom(messageType) && !type.IsSubclassOf(messageType) && !messageType.IsAssignableFrom(type)) continue;
 
-            List<WeakFuncAndToken> list = clone[type].ToList();
+            List<WeakFuncAndToken> list = [.. clone[type]];
 
             await SendToListAsync(message, list, token).Fire();
         }
@@ -157,7 +153,7 @@ public class Messenger : IMessenger {
         clone = recipientsStrictAction.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 
         if (clone.TryGetValue(messageType, out List<WeakFuncAndToken>? existingList)) {
-            List<WeakFuncAndToken> list = existingList.ToList();
+            List<WeakFuncAndToken> list = [.. existingList];
 
             await SendToListAsync(message, list, token).Fire();
         }
@@ -169,7 +165,7 @@ public class Messenger : IMessenger {
         //
         // Clone to protect from people registering in a "receive message" method
         //
-        List<WeakFuncAndToken> listClone = list.ToList();
+        List<WeakFuncAndToken> listClone = [.. list];
 
         foreach(WeakFuncAndToken item in listClone) {
             if (item.Func.IsAlive && ((item.Token == null && token == null) || item.Token != null && item.Token.Equals(token))) {
@@ -225,10 +221,10 @@ public class Messenger : IMessenger {
 
     private static void CleanupList(Dictionary<Type, List<WeakFuncAndToken>> dictionary) {
         lock (dictionary) {
-            List<Type> listsToRemove = new();
+            List<Type> listsToRemove = [];
 
             foreach ((Type type, List<WeakFuncAndToken> weakFuncAndTokens) in dictionary) {
-                List<WeakFuncAndToken> recipientsToRemove = weakFuncAndTokens.Where(item => !item.Func.IsAlive).ToList();
+                List<WeakFuncAndToken> recipientsToRemove = [.. weakFuncAndTokens.Where(item => !item.Func.IsAlive)];
 
                 foreach (WeakFuncAndToken recipient in recipientsToRemove) weakFuncAndTokens.Remove(recipient);
 
